@@ -34,6 +34,13 @@ new class extends Component
                         {{ __('Dashboard') }}
                     </x-nav-link>
                 </div>
+
+                <!-- Authentication -->
+                <button wire:click="logout" class="w-full text-start">
+                    <x-dropdown-link>
+                        {{ __('Log Out') }}
+                    </x-dropdown-link>
+                </button>
             </div>
 
             <!-- Settings Dropdown -->

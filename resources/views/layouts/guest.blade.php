@@ -1,30 +1,51 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
+<html lang="en" class="dark">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    <title>{{ config('app.name', 'Laravel') }}</title>
 
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    </head>
-    <body class="font-sans text-gray-900 antialiased">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
-            <div>
-                <a href="/" wire:navigate>
-                    <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
-                </a>
-            </div>
+    <!-- Scripts -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    {{-- <link rel="stylesheet" href="{{ url('/') }}/app.css"> --}}
+    {{-- <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css" rel="stylesheet" /> --}}
+    @livewireStyles
+</head>
 
-            <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
-                {{ $slot }}
-            </div>
+<body class="bg-gray-100 dark:bg-gray-800">
+
+    <main class="bg-gray-50 dark:bg-gray-900">
+        <div class="flex flex-col items-center justify-center px-6 pt-8 mx-auto md:h-screen pt:mt-0 dark:bg-gray-900">
+            <a href=""
+                class="flex items-center justify-center mb-8 text-2xl font-semibold lg:mb-10 dark:text-white">
+                <img src="images/logo.svg" class="mr-4 h-11" alt="FlowBite Logo">
+                <span>Flowbite</span>
+            </a>
+            <!-- Card -->
+            {{ $slot }}
         </div>
-    </body>
+
+    </main>
+
+    @livewireScripts
+
+    <script data-navigate-once src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
+
+    <script data-navigate-once src="{{ url('/') }}/buttons.github.io/buttons.js"></script>
+    <script data-navigate-once src="{{ url('/') }}/app.bundle.js"></script>
+    <script data-navigate-once src="{{ url('/') }}/cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.2/datepicker.min.js">
+    </script>
+
+    <svg id="SvgjsSvg1001" width="2" height="0" xmlns="http://www.w3.org/2000/svg" version="1.1"
+        xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.dev"
+        style="overflow: hidden; top: -100%; left: -100%; position: absolute; opacity: 0;">
+        <defs id="SvgjsDefs1002"></defs>
+        <polyline id="SvgjsPolyline1003" points="0,0"></polyline>
+        <path id="SvgjsPath1004" d="M0 0 "></path>
+    </svg>
+</body>
+
 </html>
