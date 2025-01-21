@@ -1,0 +1,494 @@
+<html><head><meta charset="utf-8">
+
+<title></title>
+<script type="text/javascript" src="jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="font-awesome.css">
+<!-- <script src="bootstrap.min.js"></script> -->
+<!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" ></script> -->
+</head>
+<body>
+
+<script>
+	$(document).ready(function(){    
+    //Check if the current URL contains '# or hash'
+    if(document.URL.indexOf("#")==-1){
+        // Set the URL to whatever it was plus "#loaded".
+        url = document.URL+"#loaded";
+        location = "#loaded";
+        //Reload the page using reload() method
+        location.reload(true);
+    }
+});
+</script>
+
+<!-- my body begin -->
+<div class="container-fluid bg-success">
+      <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+        <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+          <svg class="bi me-2" width="40" height="32"><use xlink:href="#bootstrap"></use></svg>
+          <span class="fs-4">Simple header</span>
+        </a>
+  
+        <ul class="nav nav-pills">
+          <li class="nav-item"><a href="#" class="nav-link active" aria-current="page">Home</a></li>
+          <li class="nav-item"><a href="#" class="nav-link">Features</a></li>
+          <li class="nav-item"><a href="#" class="nav-link">Pricing</a></li>
+          <li class="nav-item"><a href="#" class="nav-link">FAQs</a></li>
+          <li class="nav-item"><a href="#" class="nav-link">About</a></li>
+        </ul>
+      </header>
+    </div>
+
+
+<!--  <div style="position:fixed;float:right;margin-left:200px;" class="hide_printDialog"></div> -->
+
+<div style="width:1500px;margin-left:20%;">
+	<div title="logo" style="width:120px;float:left;">
+		<img src="logo.jpg" width="90px" height="110px">
+	</div>
+
+	<div title="logo" style="width:600px;float:left;text-transform:uppercase;font-weight:bold;line-height:15px;">
+		<h2>KOGI STATE UNIVERSITY, ANYIGBA</h2>
+		<p style="font-size:14px;">Faculty of Social Sciences <br>
+		Department of Mass Communication<br>Examination Results</p>
+	</div>
+
+<div title="logo" style="width:400px;float:left;">
+		<img src="logo.jpg" width="90px" height="110px">
+	</div>
+
+</div>
+
+<style type="text/css">
+.pos{width:5.5%}
+	.mytab tr th {font-size:9px;text-align: center; border:1px solid black !important;
+		overflow: hidden;}
+	.mytab {border-collapse: collapse;}
+	@page{size:auto;margin:7mm;}
+	@media print {
+		@page{size:landscape;}
+	}
+	* { font-size:7px;font-weight:bold;text-align: center; }
+	.smallSubj{font-size:8px;font-weight:bolder;}
+	.aggr_unit{font-weight:bolder;font-size:10px;}
+	.mytab tr{border:2px solid black;}
+</style>
+<script type="text/javascript">
+$(document).ready (function(){ $("td:empty").html("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"); });</script>
+
+
+
+<button class="reveal hidden-print btn btn-info">Hide Result Status</button>
+<form action="" method="POST" class="hidden-print" style="overflow: hidden; display: block;">
+<!--	
+&nbsp;<a onclick="return confirm('Caution:This Action Cannot be Undone!');"   href="result_processorAgreed.php" class="hidden-print" style="font-size:16px;">Approve?</a>-->
+
+</form>
+
+
+
+<div class="toggle_container" style="display: block;"><div class="block" style="font-size:15px;text-decoration:underline;"> SUPPLEMENTARY RESULT(S) </div></div>
+<br>
+
+<table class="hidden-print" align="center" width="50%">
+<tbody><tr>
+<td><form action="" method="POST" class="hidden-print">
+<input type="text" name="new_fontSize" placeholder="Font Size" style="width:150px;height:20px;font-size:12px;" minlength="1" maxlength="2" value="8">
+<input type="submit" name="sub_size" class="btn btn-primary" value="Minifier" title="Change to Reduce or Increase Font Size">
+</form></td>
+<!-- <td><a style='text-decoration:none'   href="tentative_result.php" class="hidden-print" style="font-size:16px;">
+<button class="btn btn-info">Print Tentative</button></a></td> -->
+
+<td><form action="" method="POST" class="hidden-print">
+<input type="text" name="new_session" placeholder="session" style="width:150px;height:20px;font-size:12px;" class="formater" maxlength="9">
+	<input type="submit" name="sub_sess" class="btn btn-info" value="Update">
+	</form></td>
+
+<script type="text/javascript">
+	
+$(".formater").keyup(function(){
+var val = this.value.replace(/\D/g,'');
+  var newVal='';
+  while (val.length >4){
+    newVal +=val.substr(0,4)+ '/';
+    val = val.substr(4);
+  }
+  newVal += val;
+  this.value=newVal;
+});
+</script>
+</tr>
+	
+</tbody></table>
+
+
+
+
+
+
+
+<style>.Tab tr td{text-transform: uppercase;}</style>
+<table align="center" width="90%" class="Tab" border="1">
+<tbody><tr><td colspan="2" rowspan="2"><p style="font-size:12px;">Academic Session:2018/2019</p></td>
+<td colspan="2" rowspan="2"><p style="font-size:12px;">Academic Semester/Level: &nbsp;100L First Semester</p></td><td colspan="2" rowspan="2"><p style="font-size:12px;">PROGRAMME: &nbsp;B.Sc. Mass Communication</p></td></tr></tbody></table>
+
+ 
+
+
+
+
+<table class="mytab" style="table-layout:fixed" width="100%" align="right">
+<tbody><tr><th width="2%" rowspan="2">S/N</th>
+<th width="7%" rowspan="2">NAME</th>
+<th width="4%" rowspan="2">MAT NUM</th>
+<th colspan="17" width="48%">PRESENT SEMESTER</th>
+<th width="12%" colspan="4">PREVIOUS</th>
+<th width="12%" colspan="4">SUMMARY</th>
+<th rowspan="2" style="overflow: hidden;word-wrap: break-word;font-size:10px;" class="pos" width="7%">REMARKS</th>
+
+</tr>
+<tr>
+<!--<th width="2%">S/N</th>
+	<th width="8%"></th>
+	<th width="4%">MAT NUM</th>-->
+	<!--<th width="33%" colspan="11">CORE COURSES</th>-->
+	<th width="33%" colspan="11">CORE COURSES</th><th width="6%" colspan="2">ELECTIVES</th>
+	<!--<th width="6%" colspan="2">ELECTIVE</th>-->
+	<th width="3%">TCR</th>
+ 	<th width="3%">TCE</th>
+ 	<th width="3%">TGP</th>
+ 	<th width="3%">GPA</th>
+
+ 	<th width="3%">CTCR</th>
+ 	<th width="3%">CTCE</th>
+ 	<th width="3%">CTGP</th>
+ 	<th width="3%">CGPA</th>
+
+ 	<th width="3%">CTCR</th>
+ 	<th width="3%">CTCE</th>
+ 	<th width="3%">CTGP</th>
+ 	<th width="3%">CGPA</th></tr>
+
+<tr class="boldLine_row">
+
+<th>1</th>
+<th style="overflow: hidden">ABALAKA FAVOUR OMOJO</th>
+
+<th>19MC1001</th>
+
+	<th><span class="smallSubj">MAC101</span><br>2<br><span class="aggr_unit">57C<br>6</span></th>
+
+
+	<th><span class="smallSubj">MAC103</span><br>2<br><span class="aggr_unit">52C<br>6</span></th>
+
+
+	<th><span class="smallSubj">MAC105</span><br>2<br><span class="aggr_unit">50C<br>6</span></th>
+
+	<th><span class="smallSubj">MAC107</span><br>2<br><span class="aggr_unit">55C<br>6</span></th>
+
+
+	<th><span class="smallSubj">MAC109</span><br>2<br><span class="aggr_unit">66B<br>8</span></th>
+	<th><span class="smallSubj">GST101</span><br>2<br><span class="aggr_unit">70A<br>10</span></th>
+	<th><span class="smallSubj">GST103</span><br>2<br><span class="aggr_unit">84A<br>10</span></th>
+	<th><span class="smallSubj">CSC101</span><br>2<br><span class="aggr_unit">59C<br>6</span></th>
+	<th></th>
+
+	<th></th>
+
+	<th></th>
+	<th><span class="smallSubj">ENG107</span><br>2<br><span class="aggr_unit">60B<br>8</span></th>
+
+	<th><span class="smallSubj">POL101</span><br>3<br><span class="aggr_unit">62B<br>12</span></th>
+	<th>21</th>
+
+
+	<th>21</th>
+
+
+<th>78</th>
+
+	<th>3.71 </th>
+
+	<th> </th>
+
+	<th> </th>
+
+	<th> </th>
+
+	<th> </th>
+
+	<th>21</th>
+
+	<th>21</th>
+
+	<th>78</th>
+
+	<th>3.71</th>
+
+	<th style="overflow: hidden;word-wrap: break-word;width:7%"><tt><span style="font-size:10px;">Passed</span></tt></th>
+</tr>
+
+<tr><th>1</th>
+<th style="overflow: hidden">ABDULAHI    RUKAYAT AYO</th>
+
+<th>19MC1002</th>
+
+	<th><span class="smallSubj">MAC101</span><br>2<br><span class="aggr_unit">62B<br>8</span></th>
+
+
+	<th><span class="smallSubj">MAC103</span><br>2<br><span class="aggr_unit">57C<br>6</span></th>
+
+
+	<th><span class="smallSubj">MAC105</span><br>2<br><span class="aggr_unit">45D<br>4</span></th>
+
+	<th><span class="smallSubj">MAC107</span><br>2<br><span class="aggr_unit">60B<br>8</span></th>
+
+
+	<th><span class="smallSubj">MAC109</span><br>2<br><span class="aggr_unit">65B<br>8</span></th>
+	<th><span class="smallSubj">GST101</span><br>2<br><span class="aggr_unit">66B<br>8</span></th>
+	<th><span class="smallSubj">GST103</span><br>2<br><span class="aggr_unit">61B<br>8</span></th>
+	<th><span class="smallSubj">CSC101</span><br>2<br><span class="aggr_unit">60B<br>8</span></th>
+	<th></th>
+
+	<th></th>
+
+	<th></th>
+	<th><span class="smallSubj">ENG107</span><br>2<br><span class="aggr_unit">54C<br>6</span></th>
+
+	<th><span class="smallSubj">POL101</span><br>3<br><span class="aggr_unit">65B<br>12</span></th>
+	<th>21</th>
+
+
+	<th>21</th>
+
+
+<th>76</th>
+
+	<th>3.62 </th>
+
+	<th> </th>
+
+	<th> </th>
+
+	<th> </th>
+
+	<th> </th>
+
+	<th>21</th>
+
+	<th>21</th>
+
+	<th>76</th>
+
+	<th>3.62</th>
+
+	<th style="overflow: hidden;word-wrap: break-word;width:7%"><tt><span style="font-size:10px;">Passed</span></tt></th>
+</tr>
+
+<tr><th>1</th>
+<th style="overflow: hidden">ABDULKAREEM  JEMILA OZIOHU</th>
+
+<th>19MC1003</th>
+
+	<th><span class="smallSubj">MAC101</span><br>2<br><span class="aggr_unit">55C<br>6</span></th>
+
+
+	<th><span class="smallSubj">MAC103</span><br>2<br><span class="aggr_unit">54C<br>6</span></th>
+
+
+	<th><span class="smallSubj">MAC105</span><br>2<br><span class="aggr_unit">47D<br>4</span></th>
+
+	<th><span class="smallSubj">MAC107</span><br>2<br><span class="aggr_unit">45D<br>4</span></th>
+
+
+	<th><span class="smallSubj">MAC109</span><br>2<br><span class="aggr_unit">70A<br>10</span></th>
+	<th><span class="smallSubj">GST101</span><br>2<br><span class="aggr_unit">60B<br>8</span></th>
+	<th><span class="smallSubj">GST103</span><br>2<br><span class="aggr_unit">64B<br>8</span></th>
+	<th><span class="smallSubj">CSC101</span><br>2<br><span class="aggr_unit">50C<br>6</span></th>
+	<th></th>
+
+	<th></th>
+
+	<th></th>
+	<th><span class="smallSubj">ENG107</span><br>2<br><span class="aggr_unit">47D<br>4</span></th>
+
+	<th><span class="smallSubj">POL101</span><br>3<br><span class="aggr_unit">65B<br>12</span></th>
+	<th>21</th>
+
+
+	<th>21</th>
+
+
+<th>68</th>
+
+	<th>3.24 </th>
+
+	<th> </th>
+
+	<th> </th>
+
+	<th> </th>
+
+	<th> </th>
+
+	<th>21</th>
+
+	<th>21</th>
+
+	<th>68</th>
+
+	<th>3.24</th>
+
+	<th style="overflow: hidden;word-wrap: break-word;width:7%"><tt><span style="font-size:10px;">Passed</span></tt></th>
+</tr>
+
+<tr><th>1</th>
+<th style="overflow: hidden">ABDULLAHI     FARUK</th>
+
+<th>19MC1004</th>
+
+	<th><span class="smallSubj">MAC101</span><br>2<br><span class="aggr_unit">45D<br>4</span></th>
+
+
+	<th><span class="smallSubj">MAC103</span><br>2<br><span class="aggr_unit">43E<br>2</span></th>
+
+
+	<th><span class="smallSubj">MAC105</span><br>2<br><span class="aggr_unit">50C<br>6</span></th>
+
+	<th><span class="smallSubj">MAC107</span><br>2<br><span class="aggr_unit">45D<br>4</span></th>
+
+
+	<th><span class="smallSubj">MAC109</span><br>2<br><span class="aggr_unit">58C<br>6</span></th>
+	<th><span class="smallSubj">GST101</span><br>2<br><span class="aggr_unit">58C<br>6</span></th>
+	<th><span class="smallSubj">GST103</span><br>2<br><span class="aggr_unit">46D<br>4</span></th>
+	<th><span class="smallSubj">CSC101</span><br>2<br><span class="aggr_unit">50C<br>6</span></th>
+	<th></th>
+
+	<th></th>
+
+	<th></th>
+	<th><span class="smallSubj">ENG107</span><br>2<br><span class="aggr_unit">47D<br>4</span></th>
+
+	<th><span class="smallSubj">POL101</span><br>3<br><span class="aggr_unit">60B<br>12</span></th>
+	<th>21</th>
+
+
+	<th>21</th>
+
+
+<th>54</th>
+
+	<th>2.57 </th>
+
+	<th> </th>
+
+	<th> </th>
+
+	<th> </th>
+
+	<th> </th>
+
+	<th>21</th>
+
+	<th>21</th>
+
+	<th>54</th>
+
+	<th>2.57</th>
+
+	<th style="overflow: hidden;word-wrap: break-word;width:7%"><tt><span style="font-size:10px;">Passed</span></tt></th>
+</tr>
+</tbody></table>
+<div>
+<p style="font-size:20px"><strong> Total Records: 4</strong></p><!-- <form action="" method="POST" class="hidden-print">	
+<input type="text" name="no_of_rows" placeholder="No of rows" value="250" id='restrict'>
+<input type="submit" name="no_rows" value="reload" disabled="">
+
+
+</form> -->
+
+
+
+</div>
+
+<div style="width:400px;float:left;text-transform:uppercase;margin-top:5%;font-size:13px">
+	..............................................<br>DR ATTAH CHRIS<br>head of department
+
+</div><div style="width:400px;float:right;text-transform:uppercase;margin-top:5%;font-size:13px">
+	................................................<br>PROF STEVE METIBOBA<br>dean
+
+	
+
+</div>
+
+<script>
+// event.ctrlKey
+// event.altKey
+// event.metaKey
+$(document).on('keydown', function ( e ) {
+    // You may replace `c` with whatever key you want
+if ((e.metaKey || e.ctrlKey) && ( String.fromCharCode(e.which).toLowerCase() === 'p') ) {  window.print(); }
+});
+
+
+$(document).bind('keypress', function(event) {
+if( event.which === 80 && event.shiftKey ) { window.print();}
+});
+
+$(document).keyup(function(e){
+	//find out which key was pressed
+	switch(e.keyCode){
+		case 80	:	window.print();	break;	// p
+		// case 65	:	console.log('a');	break;	// a
+		// case 66	:	console.log('b');	break;	// b
+		// case 67	:	console.log('c');	break;	// c
+		// case 68	:	console.log('d');	break;	// d
+		// case 69	:	console.log('e');	break;	// e
+		// case 70	:	console.log('f');	break;	// f
+		// case 71	:	console.log('g');	break;	// g
+		// case 72	:	console.log('h');	break;	// h
+		// case 73	:	console.log('i');	break;	// i
+		// case 74	:	console.log('j');	break;	// j
+		// case 75	:	console.log('k');	break;	// k
+		// case 76	:	console.log('l');	break;	// l
+		// case 77	:	console.log('m');	break;	// m
+		// case 78	:	console.log('n');	break;	// n
+		// case 79	:	console.log('o');	break;	// o
+
+		//case 80	:	console.log('p');	break;	// p
+
+		// case 81	:	console.log('q');	break;	// q
+		// case 82	:	console.log('r'); 	break;	// r
+		// case 83	:	console.log('s');	break;	// s
+		// case 84	:	console.log('t');	break;	// t
+		// case 85	:	console.log('u');	break;	// u
+		// case 86	:	console.log('v');	break;	// v
+		// case 87	:	console.log('w');	break;	// w
+		// case 88	:	console.log('x');	break;	// x
+		// case 89	:	console.log('y');	break;	// y
+		// case 90	:	console.log('z');	break;	// z
+	}
+});
+</script><script type="text/javascript">
+	$(document).ready(function(){
+$(".toggle_container").show(); 
+$("button.reveal").click(function(){
+    $(this).toggleClass("active").next().slideToggle("fast");
+    
+    if ($.trim($(this).text()) === 'Hide Result Status') {
+        $(this).text('Show Result Status');
+        $(".toggle_container").hide(); 
+    } else {
+        $(this).text('Hide Result Status');
+        $(".toggle_container").show();         
+    }
+    
+    return false; 
+});
+ $("a[href='" + window.location.hash + "']").parent(".reveal").click();
+});
+</script>
+
+</body></html>

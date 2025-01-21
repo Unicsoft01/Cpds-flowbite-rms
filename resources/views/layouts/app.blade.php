@@ -30,7 +30,7 @@
     </script>
 </head>
 
-<body class="bg-gray-50mine  bg-gray-200 dark:bg-gray-800">
+<body class="bg-gray-50mine  bg-gray-200 dark:bg-gray-900">
 
     <livewire:navbars.cod-navbar />
 
@@ -106,7 +106,7 @@
                 </div>
             </footer> --}}
             <p class="my-10 text-sm text-center text-gray-700 dark:text-gray-500">
-                &copy; {{ date('Y') }} <a href="#" class="font-bold text-blue-600 hover:underline"
+                &copy; 2024 - {{ date('Y') }} <a href="#" class="font-bold text-blue-600 hover:underline"
                     target="_blank">Flowbite.com - Powered by dev. </a>. All rights reserved.
             </p>
 
@@ -116,6 +116,8 @@
 
 
     {{-- scripts --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     @livewireScripts
     <script data-navigate-track data-navigate-once src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js">
     </script>

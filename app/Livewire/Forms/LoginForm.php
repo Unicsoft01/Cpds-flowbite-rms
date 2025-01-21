@@ -12,14 +12,22 @@ use Livewire\Form;
 
 class LoginForm extends Form
 {
-    #[Validate('required|string|email')]
+    // #[Validate('required|string')]
     public string $email = '';
+
+    public string $regno = '';
 
     #[Validate('required|string')]
     public string $password = '';
 
+    #[Validate('required|string')]
+    public string $user_type = 'web';
+
+    public $showEmailInput = false;
+
     #[Validate('boolean')]
     public bool $remember = false;
+
 
     /**
      * Attempt to authenticate the request's credentials.
@@ -28,15 +36,34 @@ class LoginForm extends Form
      */
     public function authenticate(): void
     {
-        $this->ensureIsNotRateLimited();
+        $guards = ['web', 'student'];
 
-        if (! Auth::attempt($this->only(['email', 'password']), $this->remember)) {
-            RateLimiter::hit($this->throttleKey());
-
+        if (!in_array($this->user_type, $guards)) {
             throw ValidationException::withMessages([
                 'form.email' => trans('auth.failed'),
             ]);
         }
+
+        $this->ensureIsNotRateLimited();
+
+        if ($this->user_type === 'web') {
+            if (! Auth::guard($this->user_type)->attempt($this->only(['email', 'password']), $this->remember)) {
+                RateLimiter::hit($this->throttleKey());
+
+                throw ValidationException::withMessages([
+                    'form.email' => trans('auth.failed'),
+                ]);
+            }
+        } elseif ($this->user_type === 'student') {
+            if (! Auth::guard($this->user_type)->attempt($this->only(['regno', 'password']), $this->remember)) {
+                RateLimiter::hit($this->throttleKey());
+
+                throw ValidationException::withMessages([
+                    'form.email' => trans('auth.failed'),
+                ]);
+            }
+        }
+
 
         RateLimiter::clear($this->throttleKey());
     }
@@ -67,6 +94,6 @@ class LoginForm extends Form
      */
     protected function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->email).'|'.request()->ip());
+        return Str::transliterate(Str::lower($this->email) . '|' . request()->ip());
     }
 }

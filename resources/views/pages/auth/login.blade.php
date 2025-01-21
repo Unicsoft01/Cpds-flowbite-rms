@@ -19,7 +19,13 @@ new #[Layout('layouts.guest')] class extends Component {
 
         Session::regenerate();
 
-        $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
+        if (Auth::guard('student')->check()) {
+            $this->redirectIntended(default: route('students.dashboard', absolute: false), navigate: true);
+        } elseif (Auth::guard('web')->check()) {
+            $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
+        }
+
+        // $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
     }
 }; ?>
 
@@ -28,15 +34,31 @@ new #[Layout('layouts.guest')] class extends Component {
     <x-auth-session-status class="rounded dark:bg-gray-600 bg-gray-200 p-3 text-center text-gray-900 dark:text-white"
         :status="session('status')" />
 
-    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+    <h2 class="text-2xl font-bold text-center text-gray-900 dark:text-white">
         Sign in to platform
     </h2>
     <form class="mt-8 space-y-6" wire:submit="login" novalidate>
+        {{-- user type --}}
         <div>
-            <x-input-label for="email" :value="__('Email')" />
+            <select wire:model.live="form.user_type" id="user_type" required
+                class="bg-white border border-white dark:border-gray-800 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 text-center">
+                <option value="student" selected>Student Portal Login</option>
+                <option value="web">Coordinator Portal Login</option>
+            </select>
+            <x-input-error :messages="$errors->get('form.user_type')" class="mt-2" />
+        </div>
 
-            <x-text-input wire:model="form.email" id="email" type="email" name="email" required autofocus
-                autocomplete="username" placeholder="name@company.com" />
+        <div>
+            @if ($form->user_type !== 'student')
+                <x-input-label for="email" :value="__('Email')" />
+
+                <x-text-input wire:model="form.email" id="email" type="email" name="email" autofocus
+                    autocomplete="username" placeholder="name@company.com" />
+            @else
+                <x-input-label for="regno" :value="__('Reg/Matric Number')" />
+                <x-text-input wire:model="form.regno" id="regno" type="text" name="regno" autofocus
+                    autocomplete="username" placeholder="valid reg/Mat No." />
+            @endif
 
             <x-input-error :messages="$errors->get('form.email')" class="mt-2" />
         </div>
@@ -71,7 +93,8 @@ new #[Layout('layouts.guest')] class extends Component {
 
         @if (Route::has('register'))
             <div class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                Don't have an account? <a href="{{ route('register') }}" wire:navigate class="text-blue-700 hover:underline dark:text-blue-400">Create
+                Don't have an account? <a href="{{ route('register') }}" wire:navigate
+                    class="text-blue-700 hover:underline dark:text-blue-400">Create
                     Account</a>
             </div>
         @endif

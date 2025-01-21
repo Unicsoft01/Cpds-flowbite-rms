@@ -9,3 +9,8 @@ npm install -D tailwindcss postcss autoprefixer flowbite
 ```php
 php artisan livewire:publish --config
 ```
+
+### Multi guard auth
+```php
+php artisan make:model Admin -m -f
+```
