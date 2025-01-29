@@ -9,16 +9,24 @@ use App\Models\Signatory;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\Attributes\Lazy;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+
 
 #[Lazy()]
 class OfficialIndex extends Component
 {
+
+    use AuthorizesRequests;
+
     public CreateUpdateOfficials $officials;
     public UpdateRecords $updatePrompt;
+    public Signatory $signatory;
 
     #[On('created')]
-    public function mount()
+    public function mount(Signatory $signatory)
     {
+        $this->authorize('view', $signatory);
+
         $test = auth()->user()->signatory()->first();
         // dd($test);
         if ($test) {

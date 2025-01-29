@@ -96,13 +96,14 @@
                                             Edit
                                         </x-primary-button>
 
-                                        <x-danger-button
-                                            wire:click="$dispatch('delete-prompt', {id: {{ $session->session_id }}})"
-                                            title="delete {{ $session->session }}">
-                                            <x-icons.trash-icon />
-                                            Delete
-                                        </x-danger-button>
-
+                                        @if (auth()->user()->hasRole('super_admin') || auth()->user()->hasRole('Admin'))
+                                            <x-danger-button
+                                                wire:click="$dispatch('delete-prompt', {id: {{ $session->session_id }}})"
+                                                title="delete {{ $session->session }}">
+                                                <x-icons.trash-icon />
+                                                Delete
+                                            </x-danger-button>
+                                        @endif
                                     </td>
                                 </tr>
                             @empty

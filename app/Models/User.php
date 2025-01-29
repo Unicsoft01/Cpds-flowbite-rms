@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -13,7 +14,7 @@ class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
-        
+
     /**
      * The primary key associated with the table.
      *
@@ -29,6 +30,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'phone',
         'password',
     ];
 
@@ -54,24 +56,51 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-    
+
     public function signatory(): HasMany
     {
         return $this->hasMany(Signatory::class, 'signatory_id');
     }
-     
+
     public function UserCourses(): HasMany
     {
         return $this->hasMany(Courses::class, 'user_id');
-    }     
+    }
     public function UserDepartment(): HasMany
     {
         return $this->hasMany(Dept::class, 'user_id');
     }
-       
+
     public function UserScores(): HasMany
     {
         return $this->hasMany(CourseRegisterations::class, 'user_id');
     }
-      
+
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class, 'role_user', 'user_id', 'role_id');
+    }
+
+    public function hasRole($role)
+    {
+        return $this->roles()->where('name', $role)->exists();
+    }
+
+    public function hasPermission($permission)
+    {
+        return $this->roles()->whereHas('permissions', function ($q) use ($permission) {
+            $q->where('name', $permission);
+        })->exists();
+    }
+
+    public function scopeSearchUser($query, $term)
+    {
+        $term = "%$term%";
+        $query->where(function ($query) use ($term) {
+            $query->where('name', 'like', $term)
+                ->orWhere('email', 'like', $term)
+                // ->orWhere('phone', 'like', $term)
+                ->orWhere('phone', 'like', $term);
+        });
+    }
 }

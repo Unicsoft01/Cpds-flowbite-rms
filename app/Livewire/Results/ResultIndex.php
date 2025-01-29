@@ -6,18 +6,22 @@ use App\Models\AcademicSessions;
 use App\Models\Dept;
 use App\Models\Level;
 use App\Models\Students;
+use App\Traits\ResultMethods;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\Attributes\Lazy;
 use Illuminate\Support\Facades\Log;
+use DB;
 
 
 #[Lazy()]
 class ResultIndex extends Component
 {
     use WithPagination;
+    use ResultMethods;
+
     public $session_id;
 
     #[Url]
@@ -42,7 +46,7 @@ class ResultIndex extends Component
     #[Url]
     public $search = "";
 
-    public $paginate = 10;
+    public $paginate = 100;
 
 
     public function mount()
@@ -100,33 +104,13 @@ class ResultIndex extends Component
 
     public function viewSelectionResults()
     {
-        // Validate selected students
-        if (empty($this->checked)) {
-            session()->flash('error', 'Please select at least one student belonging to a department, class and set to view results.');
-            return;
-        }
-
-        if (!$this->set) {
-            session()->flash('error', 'Select a valid session to continue.');
-            return;
-        }
-
-        if (!$this->determineClass($this->level)['sem']) {
-            session()->flash('error', 'Select a valid semester to continue.');
-            return;
-        }
-
-        if (!$this->determineClass($this->level)['sem']) {
-            session()->flash('error', 'Select a valid level to continue.');
-            return;
-        }
-
-        if (!$this->dept_id) {
-            session()->flash('error', 'Select a valid department to continue.');
-            return;
-        }
-        // Log::debug("students: ", [$this->checked]);
-        // Redirect to results page with selected student IDs
+        $this->SelectionResults();
+        
         return redirect()->route('results.page', ['students' => $this->checked, 'level_id' => $this->determineClass($this->level)['level'], 'semester_id' => $this->determineClass($this->level)['sem'], 'session_id' => $this->set, 'dept_id' => $this->dept_id]);
+    }
+
+    public function releaseResults()
+    {
+        $this->released();
     }
 }

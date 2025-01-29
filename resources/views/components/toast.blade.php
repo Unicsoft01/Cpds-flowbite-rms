@@ -1,4 +1,4 @@
-@props(['message' => 'Saved successfully!', 'id'])
+@props(['message' => 'Saved successfully!', 'id' => 'toastid'])
 
 <div id="{{ $id }}"
     class="fixed top-20 right-5 flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800 shadow-md dark:shadow-gray-900"

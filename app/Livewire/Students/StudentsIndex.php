@@ -32,7 +32,7 @@ class StudentsIndex extends Component
 
     #[Url]
     public $search = "";
-    public $paginate = 10;
+    public $paginate = 100;
 
     #[Url]
     #[Computed()]
@@ -67,11 +67,11 @@ class StudentsIndex extends Component
     #[Computed()]
     public function students()
     {
-        // if (Auth::user()->hasRole('admin')) {
-        //     $deptIds = Dept::pluck('dept_id'); // Fetch all departments for admins
-        // }
-
-        $deptIds = Dept::where('user_id', Auth::id())->pluck('dept_id');
+        if (Auth::user()->hasRole('Admin') || Auth::user()->hasRole('Super_admin')) {
+            $deptIds = Dept::pluck('dept_id'); // Fetch all departments for admins
+        } else {
+            $deptIds = Dept::where('user_id', Auth::id())->pluck('dept_id');
+        }
 
         // Start building the query
         $query = Students::query()->with(['department']);

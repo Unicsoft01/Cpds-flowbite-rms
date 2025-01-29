@@ -24,26 +24,34 @@
             <div class="items-center hidden mb-3 sm:flex sm:divide-x sm:divide-gray-100 sm:mb-0 dark:divide-gray-700">
                 <x-pagination-per-page />
 
-                <x-icons.bulk-delete />
+                @if (auth()->user()->hasRole('User') || auth()->user()->hasRole('Super_admin'))
+                    <x-icons.bulk-delete />
+                @endif
             </div>
 
             <div class="flex items-center ml-auto space-x-2 sm:space-x-3">
 
-                <x-light-button wire:click.prevent="OpenImportView()">
-                    <x-icons.file-import />
-                    Import Excel
-                </x-light-button>
+                @if (auth()->user()->hasRole('User'))
+                    <x-light-button wire:click.prevent="OpenImportView()">
+                        <x-icons.file-import />
+                        Import Excel
+                    </x-light-button>
+                @endif
 
                 <x-light-button wire:click.prevent="$dispatch('export-prompt')">
                     <x-icons.file-export />
                     Export Excel
                 </x-light-button>
 
-                <x-primary-button class="inline-flex items-center justify-center w-1/2 px-3 py-2 "
-                    wire:click.prevent='OpenCreatePage'>
-                    <x-icons.plus-icon />
-                    New Department
-                </x-primary-button>
+
+                @if (auth()->user()->hasRole('User'))
+                    <x-primary-button class="inline-flex items-center justify-center w-1/2 px-3 py-2 "
+                        wire:click.prevent='OpenCreatePage'>
+                        <x-icons.plus-icon />
+                        New Department
+                    </x-primary-button>
+                @endif
+
             </div>
         </div>
         {{-- new search ad  --}}
@@ -71,6 +79,12 @@
             <th scope="col" class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">
                 Faculties
             </th>
+
+            @if (auth()->user()->hasRole('Admin') || auth()->user()->hasRole('Super_admin'))
+                <th scope="col" class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">
+                    Creator
+                </th>
+            @endif
 
             <th scope="col" class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">
                 Status
@@ -114,6 +128,14 @@
                         </div>
                     </td>
 
+                    @if (auth()->user()->hasRole('Admin') || auth()->user()->hasRole('Super_admin'))
+                        <td class="p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white">
+                            <div class="flex items-center">
+                                {{ Str::of($dept->creator->name)->headline }}
+                            </div>
+                        </td>
+                    @endif
+
                     <td class="p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white">
                         <div class="flex items-center">
                             <div class="h-2.5 w-2.5 rounded-full bg-green-400 mr-2"></div> Active
@@ -128,11 +150,13 @@
                             Edit
                         </x-primary-button>
 
-                        <x-danger-button wire:click="$dispatch('delete-prompt', {id: {{ $dept->dept_id }}})"
-                            title="delete {{ $dept->department }}">
-                            <x-icons.trash-icon />
-                            Delete
-                        </x-danger-button>
+                        @if (auth()->user()->hasRole('User') || auth()->user()->hasRole('Super_admin'))
+                            <x-danger-button wire:click="$dispatch('delete-prompt', {id: {{ $dept->dept_id }}})"
+                                title="delete {{ $dept->department }}">
+                                <x-icons.trash-icon />
+                                Delete
+                            </x-danger-button>
+                        @endif
 
                     </td>
                 </tr>

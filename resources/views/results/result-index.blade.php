@@ -7,6 +7,13 @@
                 {{ session('error') }}
             </x-alerts.alert-bordered-danger>
         @endif
+
+
+        @if (session()->has('success'))
+            <x-toast message="{{ session('success') }}" id="rest">
+                <x-checked.rounded-check-success />
+            </x-toast>
+        @endif
         {{-- CTA and xpt --}}
         <div class="sm:flex
                 mb-4">
@@ -50,11 +57,14 @@
             </div>
 
             <div class="flex items-center ml-auto space-x-2 sm:space-x-3">
-                <x-success-button class="bg-green-500 hover:bg-green-700 dark:hover:bg-green-800 dark:bg-green-600"
-                    wire:click="nothingYet">
-                    <x-icons.edit-icon />
-                    Release selection results ({{ count($this->checked) }})
-                </x-success-button>
+
+                @if (auth()->user()->hasRole('User') || auth()->user()->hasRole('Super_admin'))
+                    <x-success-button class="bg-green-500 hover:bg-green-700 dark:hover:bg-green-800 dark:bg-green-600"
+                        wire:click="releaseResults">
+                        Release selection results ({{ count($this->checked) }})
+                    </x-success-button>
+                @endif
+
 
                 <x-primary-button class="inline-flex items-center justify-center w-1/2 px-3 py-2 "
                     wire:click='viewSelectionResults'>

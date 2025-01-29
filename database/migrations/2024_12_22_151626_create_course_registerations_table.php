@@ -23,6 +23,10 @@ return new class extends Migration
 
             $table->string('registered_by')->default('Student');
 
+            $table->boolean('is_carryover')->default(false);
+            $table->boolean('is_spillover')->default(false);
+            $table->boolean('result_status')->default(false);
+
             $table->unsignedBigInteger('user_id')->index(); // owner score computer
 
             $table->integer('score')->nullable();

@@ -19,6 +19,8 @@ use Livewire\Attributes\Lazy;
 #[Lazy()]
 class DeptIndex extends Component
 {
+
+    public Dept $dept;
     public DeleteRecords $deletePrompt;
     use WithPagination;
 
@@ -30,11 +32,16 @@ class DeptIndex extends Component
 
     #[Url]
     public $search = "";
-    public $paginate = 10;
+    public $paginate = 100;
 
     #[Url]
     #[Computed()]
     public $faculty_id = null;
+
+    public function mount(Dept $dept)
+    {
+        $this->authorize('view', $dept);
+    }
 
     public function setSortBy($col)
     {
@@ -46,7 +53,6 @@ class DeptIndex extends Component
         $this->orderBy = $col;
         $this->sortDir = "asc";
     }
-
 
     public function indicateChecked($dept_id)
     {
@@ -82,6 +88,26 @@ class DeptIndex extends Component
             ->simplePaginate($this->paginate);
     }
 
+    #[Computed()]
+    public function Alldepartments()
+    {
+        $facIDs = Faculties::pluck('faculty_id');;
+
+        // Start building the query
+        $query = Dept::query()->with('facultyMember', 'creator');
+
+        // Apply the fac filter
+        if ($this->faculty_id) {
+            $query->where('faculty_id', $this->faculty_id);
+        } else {
+            $query->whereIn('faculty_id', $facIDs);
+        }
+
+        return $query->searchDepartments(trim($this->search))
+            ->orderBy($this->orderBy, $this->sortDir)
+            ->simplePaginate($this->paginate);
+    }
+
     public function OpenCreatePage()
     {
         $this->redirectRoute('department.create', navigate: true);
@@ -95,9 +121,16 @@ class DeptIndex extends Component
 
     public function render()
     {
-        return view('departments.dept-index', [
-            'departments' => $this->departments,
-        ]);
+        if (Auth::user()->hasRole('Admin')) {
+            return view('departments.dept-index', [
+                'departments' => $this->Alldepartments,
+            ]);
+        }
+        if (Auth::user()->hasRole('User')) {
+            return view('departments.dept-index', [
+                'departments' => $this->departments,
+            ]);
+        }
     }
 
     protected $listeners = [
@@ -107,7 +140,11 @@ class DeptIndex extends Component
     #[On('Confirm-Delete')]
     public function DeleteRecord($id)
     {
-        $this->deletePrompt->DeleteRecord('App\Models\Dept', $id);
+        $academicSession = Dept::findOrFail($id);
+
+        $this->authorize('delete', $academicSession);
+
+        $this->deletePrompt->DeleteRecord(Dept::class, $id);
 
         $this->dispatch(
             'swal',
@@ -128,7 +165,14 @@ class DeptIndex extends Component
             session()->flash('error', 'Please select one or multiple Departments to delete');
             return;
         }
-        Dept::whereKey($this->checked)->delete();
+
+        $departments = Dept::whereKey($this->checked)->get();
+
+        foreach ($departments as $department) {
+            $this->authorize('delete', $department); // Authorize each department
+            $department->delete(); // Delete the department if authorized
+        }
+
         $this->checked = [];
         $this->selectAll = false;
         // $this->selectPage = false;

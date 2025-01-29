@@ -1,19 +1,36 @@
 <?php
 
 use App\Models\Students;
+use App\Models\Dept;
+use App\Models\Faculties;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
+use App\Models\Role;
 
-new #[Layout('layouts.guest')] class extends Component
-{
-    public string $name = '';
+new #[Layout('layouts.guest')] class extends Component {
+    public string $surname = '';
+    public string $middlename = '';
+    public string $firstname = '';
+    public string $regno = '';
     public string $email = '';
+    public string $phone = '';
+    public $set;
+    public $faculty_id;
+    public $dept_id;
     public string $password = '';
     public string $password_confirmation = '';
+    public $faculties;
+
+    public $departments = [];
+
+    public function mount()
+    {
+        $this->faculties = Faculties::orderBy('faculty', 'asc')->get(['faculty_id', 'faculty']);
+    }
 
     /**
      * Handle an incoming registration request.
@@ -21,68 +38,198 @@ new #[Layout('layouts.guest')] class extends Component
     public function StudentRegister(): void
     {
         $validated = $this->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.Students::class],
+            'surname' => ['required', 'string', 'max:50'],
+            'firstname' => ['required', 'string', 'max:50'],
+            'regno' => ['required', 'string', 'max:50'],
+            'phone' => ['required', 'string', 'max:20'],
+            'dept_id' => ['required', 'exists:depts,dept_id'],
+            'faculty_id' => ['required', 'exists:faculties,faculty_id'],
+            'set' => ['required', 'exists:academic_sessions,session_id'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . Students::class],
             'password' => ['required', 'string', 'confirmed', Rules\Password::defaults()],
         ]);
 
+        // dd($validated);
+
         $validated['password'] = Hash::make($validated['password']);
 
-        event(new Registered($student = Students::create($validated)));
+        // event(new Registered(($student = Students::create($validated))));
 
-        Auth::guard('student')->login($student);
+        $user = Students::create($validated);
+
+        // Assign default role
+        $defaultRole = Role::where('name', 'Student')->first(); // Ensure 'User' role exists
+
+        if ($defaultRole) {
+            $user->roles()->attach($defaultRole->role_id);
+        }
+
+        // Fire registered event
+        event(new Registered($user));
+
+        Auth::guard('student')->login($user);
 
         $this->redirect(route('students.dashboard', absolute: false), navigate: true);
     }
+
+    public function updatedFacultyId()
+    {
+        $this->departments = Dept::where('faculty_id', $this->faculty_id)
+            ->orderBy('department', 'asc')
+            ->get(['dept_id', 'department']);
+    }
 }; ?>
 
-<div>
-    <form wire:submit="StudentRegister" novalidate>
+<div class="w-full max-w-xl p-6 space-y-8d sm:p-8 bg-white rounded-lg shadow dark:bg-gray-800">
+
+    <x-auth-session-status class="rounded dark:bg-gray-600 bg-gray-200 p-3 text-center text-gray-900 dark:text-white"
+        :status="session('status')" />
+
+    <h2 class="md:text-2xl font-bold text-center text-gray-900 dark:text-white">
+        Create an account for free!
+    </h2>
+    <form class="mt-8 space-y-6" wire:submit="StudentRegister" novalidate>
+
         <!-- Name -->
         <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input wire:model="name" id="name" class="block mt-1 w-full" type="text" name="name" required autofocus autocomplete="name" />
-            <x-input-error :messages="$errors->get('name')" class="mt-2" />
+            <x-input-label for="surname" :value="__('Surname')" />
+
+            <x-text-input wire:model="surname" id="surname" type="text" name="surname" autofocus autocomplete="surname"
+                placeholder="Enter your surname" required />
+
+            <x-input-error :messages="$errors->get('surname')" class="mt-2" />
+        </div>
+        <div>
+            <x-input-label for="middlename" :value="__('Middlename (Optional) ')" />
+
+            <x-text-input wire:model="middlename" id="middlename" type="text" name="middlename"
+                placeholder="Enter a middlename" />
+
+            <x-input-error :messages="$errors->get('middlename')" class="mt-2" />
+        </div>
+        <div>
+            <x-input-label for="firstname" :value="__('Firstname')" />
+
+            <x-text-input wire:model="firstname" id="firstname" type="text" name="firstname"
+                placeholder="Enter your firstname" required />
+
+            <x-input-error :messages="$errors->get('firstname')" class="mt-2" />
         </div>
 
-        <!-- Email Address -->
-        <div class="mt-4">
+        <div>
+            <x-input-label for="regno" :value="__('Reg/Mat No.')" />
+
+            <x-text-input wire:model="regno" id="regno" type="text" name="regno"
+                placeholder="Enter your Reg/Mat No." required />
+
+            <x-input-error :messages="$errors->get('regno')" class="mt-2" />
+        </div>
+
+
+        <!-- Phone -->
+        <div>
+            <x-input-label for="phone" :value="__('Phone')" />
+
+            <x-text-input wire:model="phone" id="phone" type="text" name="phone" autofocus autocomplete="phone"
+                placeholder="Enter your contact no." max="13" required />
+
+            <x-input-error :messages="$errors->get('phone')" class="mt-2" />
+        </div>
+
+        <!-- mail -->
+        <div>
             <x-input-label for="email" :value="__('Email')" />
-            <x-text-input wire:model="email" id="email" class="block mt-1 w-full" type="email" name="email" required autocomplete="username" />
+
+            <x-text-input wire:model="email" id="email" type="email" name="email" autofocus
+                autocomplete="username" placeholder="E.g name@mail.com" />
+
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
+        </div>
+
+
+        <div>
+            <x-input-label for="faculty_id" :value="__('Faculty')" />
+
+            <select wire:model.live="faculty_id" id="faculty_id" required
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 text-center capitalize">
+                <option value="">Select your faculties</option>
+                @forelse ($faculties as $faculty)
+                    <option value="{{ $faculty->faculty_id }}">
+                        {{ $faculty->faculty }}
+                    </option>
+                @empty
+                    <option value="">No Faculty at the moment!</option>
+                @endforelse
+            </select>
+            <x-input-error :messages="$errors->get('faculty_id')" class="mt-2" />
+        </div>
+
+        <div>
+            <x-input-label for="dept_id" :value="__('Department')" />
+
+            <select wire:model.live="dept_id" id="dept_id" required
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 text-center capitalize">
+                <option value="">Select your Department</option>
+                @forelse ($departments as $dept)
+                    <option value="{{ $dept->dept_id }}">
+                        {{ $dept->department }}
+                    </option>
+                @empty
+                    <option value="">No department at the moment!</option>
+                @endforelse
+            </select>
+            <x-input-error :messages="$errors->get('dept_id')" class="mt-2" />
+        </div>
+
+        <div>
+            <x-input-label for="set" :value="__('Academic set')" />
+            <select wire:model.live="set" id="set" required
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 text-center">
+                <option value="">Select your Academic set</option>
+                @forelse (\App\Models\AcademicSessions::orderBy('session', 'desc')->get(['session_id', 'session']) as $set)
+                    <option value="{{ $set->session_id }}">
+                        {{ $set->session }}/{{ $set->session + 1 }}
+                    </option>
+                @empty
+                    <option value="">Go create some Session first!</option>
+                @endforelse
+            </select>
+            <x-input-error :messages="$errors->get('set')" class="mt-2" />
         </div>
 
         <!-- Password -->
         <div class="mt-4">
             <x-input-label for="password" :value="__('Password')" />
 
-            <x-text-input wire:model="password" id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="new-password" />
+            <x-text-input wire:model="password" id="password" class="block mt-1 w-full" type="password" name="password"
+                placeholder="••••••••" required autocomplete="new-password" />
 
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
         <!-- Confirm Password -->
+
         <div class="mt-4">
             <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
 
             <x-text-input wire:model="password_confirmation" id="password_confirmation" class="block mt-1 w-full"
-                            type="password"
-                            name="password_confirmation" required autocomplete="new-password" />
+                type="password" name="password_confirmation" placeholder="••••••••" required
+                autocomplete="new-password" />
 
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
         </div>
 
-        <div class="flex items-center justify-end mt-4">
-            <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('students.login') }}" wire:navigate>
-                {{ __('Already registered?') }}
-            </a>
+        <x-primary-button class="w-full">
+            {{ __('Register') }}
+        </x-primary-button>
 
-            <x-primary-button class="ms-4">
-                {{ __('Register') }}
-            </x-primary-button>
-        </div>
+        @if (Route::has('login'))
+            <div class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                {{ __('Already registered?') }} <a href="{{ route('login') }}" wire:navigate
+                    class="text-blue-700 hover:underline dark:text-blue-400">Log in
+                    Account</a>
+            </div>
+        @endif
+
     </form>
 </div>

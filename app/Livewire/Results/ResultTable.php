@@ -9,6 +9,7 @@ use App\Models\Level;
 use App\Models\Semester;
 use App\Models\Signatory;
 use App\Models\Students;
+use App\Traits\ResultMethods;
 use Livewire\Attributes\Computed;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -23,40 +24,15 @@ use Livewire\Attributes\On;
 #[Lazy()]
 class ResultTable extends Component
 {
+
+    use ResultMethods;
+
     public $students, $session, $semester, $level, $dept, $coreCourse, $eleCount, $officials, $level_id, $semester_id;
     public $showNames = true;
 
-    // public function mount($student_id, $session_id, $semester_id, $level_id, $dept_id)
-    // {
-    //     $this->level_id = $level_id;
-    //     $this->semester_id = $semester_id;
-    //     $this->session = $this->CurrentSession($session_id, $level_id);
+    public $recordsPerPage = 10; 
+    public $studentsChunked = [];
 
-    //     // Fetch level and semester values directly with specific columns
-    //     $this->level = Level::where('level_id', $level_id)->value('level'); // Only fetches the level column
-    //     $this->semester = Semester::where('semester_id', $semester_id)->value('semester');
-
-    //     $this->dept = Dept::with(['facultyMember:faculty,faculty_id'])
-    //         ->select('department', 'faculty_id', 'dept_id')
-    //         ->find($dept_id);
-
-    // Log::debug("level: , {$this->level}, semester: , {$this->semester}, session: , [$this->session], department: , {$this->dept},");
-
-    //     $this->students = Students::with(['courseRegistrations' => function ($query) use ($semester_id, $level_id, $session_id, $student_id) {
-    //         $query->whereIn('student_id', $student_id)
-    //             ->where('semester_id', $semester_id)
-    //             ->where('level_id', $level_id)
-    //             ->where('session_id', $session_id);
-    //         // ->with('courses');
-    //     }])->get();
-
-    //     $this->officials = Signatory::where('user_id', Auth::id())->first();
-
-    //     $Loadcourses = Courses::where('user_id', Auth::id())->where('dept_id', $dept_id)->where('level_id', $level_id)->where('semester_id', $semester_id)->get();
-
-    //     $this->coreCourse = $Loadcourses->where('status', 'C');
-    //     $this->eleCount = $Loadcourses->where('status', 'E');
-    // }
 
     public function mount($student_id, $session_id, $semester_id, $level_id, $dept_id)
     {
@@ -78,12 +54,7 @@ class ResultTable extends Component
             ->select('department', 'faculty_id', 'dept_id')
             ->findOrFail($dept_id); // Ensures valid dept_id
 
-        // Fetch students and their course registrations with eager loading
-        // $this->students = Students::with(['courseRegistrations.courses']) // Eager load courses relation
-        //     ->whereIn('student_id', (array) $student_id) // Ensure student_id is an array
-        //     ->get();
-
-        $this->students = Students::with([
+        $students = Students::with([
             'courseRegistrations' => function ($query) use ($semester_id, $level_id, $session_id) {
                 $query->where('semester_id', $semester_id)
                     ->where('level_id', $level_id)
@@ -92,8 +63,10 @@ class ResultTable extends Component
             },
         ])->whereIn('student_id', (array) $student_id)->get();
 
+        $this->studentsChunked = $students->toBase()->chunk($this->recordsPerPage);
+
         // Fetch signatory details for the current user
-        $this->officials = Signatory::select('user_id', 'exam_officer', 'hod') // Only fetch necessary columns
+        $this->officials = Signatory::select('user_id', 'exam_officer', 'hod')
             ->where('user_id', Auth::id())
             ->first();
 
@@ -110,32 +83,9 @@ class ResultTable extends Component
         $this->eleCount = $Loadcourses->where('status', 'E');
     }
 
-
-    #[On('toggleNames')]
-    public function toggleNames()
-    {
-        return $this->showNames = !$this->showNames;
-    }
-
-    public function CurrentSession($set, $level)
-    {
-        if (!$set || !$level) {
-            session()->flash('error', 'Please Select a Level/Semester.');
-            return;
-        }
-
-        $ses = AcademicSessions::select('session')->find($set)->session;
-
-        if ($level == 1) {
-            return $ses;
-        } else {
-            return $ses + 1;
-        }
-    }
-
     public function render()
     {
-        // dd($this->coreCourse);
+        // dd($this->dept->dept_id);
         return view('results.result-table');
     }
 
@@ -155,7 +105,7 @@ class ResultTable extends Component
     public function calculateTGP($courseRegistrations)
     {
         // Total Grade Points (sum of grade points * course units for the semester)
-        return $courseRegistrations->sum(fn($reg) => ($reg->grade_point ?? 0) * ($reg->courses->unit ?? 0));
+        return $courseRegistrations->sum(fn($reg) => ($reg->grade_point ?? 0)); //* ($reg->courses->unit ?? 0));
     }
 
     public function calculateGPA($courseRegistrations)
@@ -189,7 +139,7 @@ class ResultTable extends Component
     public function calculateCTGP($student)
     {
         // Cumulative Total Grade Points
-        return $student->courseRegistrations->sum(fn($reg) => ($reg->grade_point ?? 0) * ($reg->courses->unit ?? 0));
+        return $student->courseRegistrations->sum(fn($reg) => ($reg->grade_point ?? 0)); // * ($reg->courses->unit ?? 0));
     }
 
     public function calculateCGPA($student)
@@ -258,7 +208,7 @@ class ResultTable extends Component
         // Calculate metrics
         $ctcr = $previousRegistrations->sum('unit'); // Total Credit Registered
         $ctce = $previousRegistrations->filter(fn($reg) => $reg->grade_point > 0)->sum('unit'); // Total Credit Earned
-        $ctgp = $previousRegistrations->sum(fn($reg) => ($reg->grade_point ?? 0) * ($reg->unit ?? 0)); // Total Grade Points
+        $ctgp = $previousRegistrations->sum(fn($reg) => ($reg->grade_point ?? 0)); // * ($reg->unit ?? 0)); // Total Grade Points
         $cgpa = $ctcr > 0 ? round($ctgp / $ctcr, 2) : 0; // Cumulative GPA
 
         // Calculate CGPA (CTGP / CTCR)
@@ -321,7 +271,7 @@ class ResultTable extends Component
         // Calculate metrics
         $ctcr = $registrations->sum('unit'); // Total Credit Registered
         $ctce = $registrations->filter(fn($reg) => $reg->grade_point > 0)->sum('unit'); // Total Credit Earned
-        $ctgp = $registrations->sum(fn($reg) => ($reg->grade_point ?? 0) * ($reg->unit ?? 0)); // Total Grade Points
+        $ctgp = $registrations->sum(fn($reg) => ($reg->grade_point ?? 0)); // * ($reg->unit ?? 0)); // Total Grade Points
         $cgpa = $ctcr > 0 ? round($ctgp / $ctcr, 2) : 0; // Cumulative GPA
         $cgpa = $cgpa > 0 ? number_format($cgpa, 2, '.', '') : 0;
 
@@ -329,81 +279,32 @@ class ResultTable extends Component
         return compact('ctcr', 'ctce', 'ctgp', 'cgpa');
     }
 
-    public function generateRemark($student, $level_id, $semester_id, $coreCourses)
+    public function generateRemark($student)
     {
-        // Fetch carryover courses (failed or unattempted)
-        $carryOverCourses = DB::table('course_registerations')
-            ->join('courses', 'course_registerations.course_id', '=', 'courses.course_id')
-            ->where('course_registerations.student_id', $student->student_id)
-            ->where('courses.status', 'C') // Only core courses
-            ->where(function ($q) use ($level_id, $semester_id) {
-                // Level = Diploma1, Semester = 1
-                if ($level_id === 1 && $semester_id == 1) {
-                    $q->where('course_registerations.level_id', '=', 1)
-                        ->where('course_registerations.semester_id', '==', 1);
-                }
-                // Level = Diploma1, Semester = 2
-                elseif ($level_id === 1 && $semester_id == 2) {
-                    $q->where('course_registerations.level_id', '=', 1);
-                }
-                // Level = Diploma2, Semester = 1
-                elseif ($level_id === 2 && $semester_id == 1) {
-                    $q->where('course_registerations.level_id', '=', 1)
-                        ->orWhere(function ($q2) {
-                            $q2->where('course_registerations.level_id', '=', 2)
-                                ->where('course_registerations.semester_id', '=', 1);
-                        });
-                }
-                // Level = Diploma2, Semester = 2
-                elseif ($level_id === 2 && $semester_id == 2) {
-                    $q->where('course_registerations.level_id', '=', 1)
-                        ->orWhere('course_registerations.level_id', '=', 2);
-                }
-            })
-            ->where(function ($q) {
-                // Carryover conditions: grade_point < 1 OR no score
-                $q->where('course_registerations.grade_point', '<', 1)
-                    ->orWhere('course_registerations.grade', '===', 'F')
-                    ->orWhereNull('course_registerations.score');
-            })
-            ->pluck('courses.course_code') // Get only the course codes
-            ->toArray();
+        $coreCourseIds = $this->getCoreCourses();
 
-        // Fetch registered courses
-        $registeredCourses = DB::table('course_registerations')
-            ->where('student_id', $student->student_id)
-            ->pluck('course_id') // Only pluck course_id to match coreCourses
-            ->toArray();
+        $carryOverCourseIds = $this->getCarryoverCourses($student);
 
-        // Identify unregistered courses
-        $unregisteredCourseIds = array_diff(array_keys($coreCourses->toArray()), $registeredCourses);
+        $registeredCourseIds = $this->getRegisteredCourses($student);
 
-        // Get unregistered course details
+        $unregisteredCourseIds = $coreCourseIds->diff($registeredCourseIds);
+
         $unregisteredCourses = DB::table('courses')
             ->whereIn('course_id', $unregisteredCourseIds)
-            ->pluck('course_code') // Get only the course codes
+            ->pluck('course_code')
             ->toArray();
 
+        $carryOverCourses = DB::table('courses')
+            ->whereIn('course_id', $carryOverCourseIds)
+            ->pluck('course_code')
+            ->toArray();
 
-        // Append unregistered courses to carryover list
-        // $carryOverCourses = array_merge($carryOverCourses, $unregisteredCourses);
-
-        // // Generate remark
-        // if (!empty($carryOverCourses)) {
-        //     return implode(',', $carryOverCourses);
-        // }
-
-        // Log::debug("Checking carryover for student: {$student->regno} - Semester: {$semester_id} - Level: {$level_id}");
-        // Log::debug("Carryover Courses Query: ", [$carryOverCourses]);
-        // Log::debug("Unregistered Courses Query: ", [$unregisteredCourses]);
-
-
-        // Combine carryover and unregistered courses, making sure no duplicates
+        // Combine unregistered and carryover courses, ensuring no duplicates
         $finalCourses = array_unique(array_merge($carryOverCourses, $unregisteredCourses));
 
         // Generate remark
         if (!empty($finalCourses)) {
-            return implode(',', $finalCourses);
+            return implode(',', $finalCourses); // Return a comma-separated list of course codes
         }
 
         return 'Passed';

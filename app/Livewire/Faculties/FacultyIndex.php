@@ -12,6 +12,7 @@ use Livewire\WithPagination;
 
 use App\Exports\CoursesExport;
 use App\Exports\FacultiesExport;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Lazy;
 use Maatwebsite\Excel\Facades\Excel;
@@ -20,8 +21,9 @@ use Maatwebsite\Excel\Facades\Excel;
 class FacultyIndex extends Component
 {
     use WithPagination;
+    use AuthorizesRequests;
 
-
+    public Faculties $faculty;
     public DeleteRecords $deletePrompt;
 
     public $selectAll = false; // select all students w
@@ -29,7 +31,12 @@ class FacultyIndex extends Component
 
     #[Url()]
     public $search = "";
-    public $paginate = 10;
+    public $paginate = 100;
+
+    public function mount(Faculties $faculty)
+    {
+        $this->authorize('view', $faculty);
+    }
 
     public function indicateChecked($faculty_id)
     {
@@ -78,7 +85,12 @@ class FacultyIndex extends Component
     #[On('Confirm-Delete')]
     public function DeleteRecord($id)
     {
-        $this->deletePrompt->DeleteRecord('App\Models\Faculties', $id);
+
+        $del = Faculties::findOrFail($id);
+
+        $this->authorize('delete', $del);
+
+        $this->deletePrompt->DeleteRecord(Faculties::class, $id);
 
         $this->dispatch(
             'swal',
@@ -100,7 +112,14 @@ class FacultyIndex extends Component
             session()->flash('error', 'Please select one or multiple Faculties to delete');
             return;
         }
-        Faculties::whereKey($this->checked)->delete();
+
+        $Faculties = Faculties::whereKey($this->checked)->get();
+
+        foreach ($Faculties as $fac) {
+            $this->authorize('delete', $fac);
+            $fac->delete(); //
+        }
+
         $this->checked = [];
         $this->selectAll = false;
         // $this->selectPage = false;

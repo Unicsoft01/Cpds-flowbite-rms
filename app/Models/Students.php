@@ -34,6 +34,7 @@ class Students extends Authenticatable
         'firstname',
         'set',
         'regno',
+        'phone',
         'programme_id',
         'faculty_id',
         'dept_id',
@@ -69,6 +70,16 @@ class Students extends Authenticatable
         return $this->belongsTo(Dept::class, 'dept_id');
     }
 
+    public function faculty(): BelongsTo
+    {
+        return $this->belongsTo(Faculties::class, 'faculty_id');
+    }
+
+    public function programme(): BelongsTo
+    {
+        return $this->belongsTo(Programme::class, 'programme_id');
+    }
+
     public function courseRegistrations(): HasMany
     {
         return $this->hasMany(CourseRegisterations::class, 'student_id');
@@ -93,5 +104,22 @@ class Students extends Authenticatable
             ->orWhere('firstname', 'like', $term)
             ->orWhere('regno', 'like', $term);
         });
+    }
+
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class, 'role_student', 'student_id', 'role_id');
+    }
+
+    public function hasRole($role)
+    {
+        return $this->roles()->where('name', $role)->exists();
+    }
+
+    public function hasPermission($permission)
+    {
+        return $this->roles()->whereHas('permissions', function ($q) use ($permission) {
+            $q->where('name', $permission);
+        })->exists();
     }
 }

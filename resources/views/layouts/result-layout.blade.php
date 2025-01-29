@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
 
-    <title>Lorem ipsum dolor sit amet.</title>
+    <title>{{ config('app.name', 'Laravel') }}</title>
     <script type="text/javascript" src="{{ url('/') }}/sbyte/jquery.min.js"></script>
     <link rel="stylesheet" type="text/css" href="{{ url('/') }}/sbyte/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="{{ url('/') }}/sbyte/font-awesome.css">
@@ -55,7 +55,7 @@
                     class="reveal text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-2xl px-4 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                     Hide Result Status
                 </button>
-{{-- 
+                {{-- 
                 <button type="button"
                     class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-2xl px-4 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                     Hide

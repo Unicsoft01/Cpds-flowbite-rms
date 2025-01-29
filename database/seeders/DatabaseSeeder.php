@@ -96,6 +96,15 @@ class DatabaseSeeder extends Seeder
             'level' => 'diploma2',
             'programme_id' => 1,
         ]);
+        
+        Level::factory()->create([
+            'level' => 'spillover1',
+            'programme_id' => 1,
+        ]);
+        Level::factory()->create([
+            'level' => 'spillover2',
+            'programme_id' => 1,
+        ]);
 
 
 

@@ -38,7 +38,7 @@ class AdminCourseRegistration extends Component
 
     #[Url()]
     public $search = "";
-    public $paginate = 10;
+    public $paginate = 100;
 
     public $session_id;
     public $course_id;
@@ -188,10 +188,6 @@ class AdminCourseRegistration extends Component
         // Apply ordering and pagination
         return $query->simplePaginate($this->paginate);
     }
-
-
-
-
 
     #[On('Confirm-Export')]
     public function exportSelected()

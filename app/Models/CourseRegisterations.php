@@ -22,6 +22,10 @@ class CourseRegisterations extends Model
         'level_id',
         'registered_by',
 
+        'is_carryover',
+        'is_spillover',
+        'result_status',
+
         'user_id',
         'score',
         'grade_point',

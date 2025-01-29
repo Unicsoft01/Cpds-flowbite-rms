@@ -2,32 +2,51 @@
 
 namespace App\Livewire\CourseReg;
 
+use App\Livewire\Forms\UpdateRecords;
 use App\Models\CourseRegisterations;
+use App\Models\Courses;
 use App\Models\Scores;
 use App\Models\Students;
+use App\Traits\SharedMethods;
+use App\Traits\StudentCourseRegMethods;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Reactive;
+use Livewire\Attributes\Url;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
 class AdminCourseRegistrationCreate extends Component
 {
+    use SharedMethods;
+    use StudentCourseRegMethods;
+    public UpdateRecords $updatePrompt;
+
+
     #[Validate('required|string|exists:students,regno', as: 'Student Reg. Number')]
     public $regno; //rep matNumber
     public $selectedCourses = [];
+    #[Url()]
     public $session_id;
+
+    #[Url()]
     public $semester_id = 1;
+
+    #[Url()]
     public $level_id;
     // public $deptCourses;
 
-    public $student;
-    
+    public $student, $level;
 
+    public function updatedLevel()
+    {
+        $this->MakeClass();
+    }
     public function mount($slug = null)
     {
         if (isset($slug)) {
-            $this->student = Students::with('department')->where('student_id', $slug)->first();
+            $this->student = Students::with(['department', 'programme:programme_id,program', 'faculty:faculty_id,faculty'])->where('student_id', $slug)->first();
 
             if (!$this->student) {
                 session()->flash('error', 'No record was found for ' . $slug . ' Kindly create a student for that record and try again!');
@@ -49,61 +68,44 @@ class AdminCourseRegistrationCreate extends Component
         $this->redirectRoute('course-reg.create-slug',  ['slug' => $id], navigate: true);
     }
 
-    #[Computed()]
-    public function StudentCourses()
-    {
-        return $this->student->department->courses()->where('level_id', $this->level_id)->where('semester_id', $this->semester_id)->get();
-    }
-
     public function render()
     {
-        return view('course-reg.admin-course-registration-create');
+        if ($this->student) {
+            return view('course-reg.admin-course-registration-create', [
+                'StudentCourses' => $this->StudentCourses($this->student->dept_id),
+            ]);
+        } else {
+            return view('course-reg.admin-course-registration-create');
+        }
     }
 
     //
     public function registerCourses()
     {
-
         $this->NotEmpty($this->selectedCourses);
 
-        // dd($this->selectedCourses);
-        foreach ($this->selectedCourses as $courseId) {
-            $cr =  CourseRegisterations::updateOrCreate(
-                [
-                    'student_id' => $this->student->student_id,
-                    'course_id' => $courseId,
-                    'session_id' => $this->session_id,
-                    'semester_id' => $this->semester_id,
-                    'level_id' => $this->level_id,
-                    'user_id' => 1,
-                ],
-                ['registered_by' => 'Admin'],
+        if ($this->selectedCourses) {
+            // dd($this->selectedCourses);
+            foreach ($this->selectedCourses as $courseId) {
+                $cr =  CourseRegisterations::updateOrCreate(
+                    [
+                        'student_id' => $this->student->student_id,
+                        'course_id' => $courseId,
+                        'session_id' => $this->session_id,
+                        'semester_id' => $this->semester_id,
+                        'level_id' => $this->level_id,
+                        'user_id' => Auth::id(),
+                    ],
+                    ['registered_by' => 'Admin'],
+                );
+            }
+
+            $this->dispatch(
+                'swal',
+                $this->updatePrompt->Swal()
             );
 
-            // Scores::updateOrCreate(
-            //     [
-            //         'user_id' => 1,
-            //         'registration_id' => $cr->registration_id,
-            //     ],
-            // );
-        }
-
-        session()->flash('success', 'Courses registered successfully for the student!');
-        $this->reset('selectedCourses');
-        // $this->selectedCourses = [];
-
-    }
-
-    public function NotEmpty($value)
-    {
-        if (empty($value)) {
-            session()->flash('error', 'Please select at least one course.');
-            return;
+            $this->redirectRoute('course-reg.index', navigate: true);
         }
     }
 }
-
-// $this->regno = $slug;
-// $this->validate([
-//     'regno' => 'required|string|exists:students,regno', as 'M',
-// ]);

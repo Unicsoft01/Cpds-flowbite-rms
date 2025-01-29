@@ -36,7 +36,7 @@ class CourseIndex extends Component
 
     #[Url]
     public $search = "";
-    public $paginate = 10;
+    public $paginate = 100;
 
     #[Url]
     #[Computed()]

@@ -21,7 +21,7 @@
                     <a href="{{ route('dashboard') }}" wire:navigate class="flex ml-2 md:mr-24">
                         <img src="{{ url('/') }}/images/logo.svg" class="h-8 mr-3" alt="FlowBite Logo" />
                         <span
-                            class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">CPDS-RMS</span>
+                            class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">CPDS-Online</span>
                     </a>
                     {{-- <form action="#" method="GET" class="hidden lg:block lg:pl-3.5">
                         <label for="topbar-search" class="sr-only">Search</label>
@@ -39,15 +39,22 @@
                                 placeholder="Search me">
                         </div>
                     </form> --}}
+
                     <div class="hidden lg:block ">
-                        <x-light-button wire:click.prevent="OpenGradingView()">
-                            <x-icons.todo-list-icon />
-                            Grading System
-                        </x-light-button>
-                        <x-light-button wire:click.prevent="OpenOfficialsView()">
-                            <x-icons.user-settings />
-                            Officials
-                        </x-light-button>
+                        @if (auth()->user()->hasPermission('edit_content'))
+                            <x-light-button wire:click.prevent="OpenGradingView()">
+                                <x-icons.todo-list-icon />
+                                Grading System
+                            </x-light-button>
+                        @endif
+
+                        @if (auth()->user()->hasRole('User'))
+                            <x-light-button wire:click.prevent="OpenOfficialsView()">
+                                <x-icons.user-settings />
+                                Officials
+                            </x-light-button>
+                        @endif
+
                     </div>
                 </div>
 
@@ -55,17 +62,31 @@
                 <div class="flex items-center">
                     {{-- navbar menus slot --}}
                     <div class="hidden lg:block ">
-                        @if (Route::is('carryover.index'))
-                        <x-buttons.btn-purple-blue-outline>
-                            CO Scores
-                        </x-buttons.btn-purple-blue-outline>
-                        <x-buttons.btn-purple-blue-outline>
-                            CO Results
-                        </x-buttons.btn-purple-blue-outline>
+                        @if (auth()->user()->hasRole('User'))
+                            @if (Route::is('carryover.index') || Route::is('carryover.scoresheet') || Route::is('carryover.result'))
+                                <div class="mt-1d">
+                                    <x-buttons.btn-purple-blue-outline wire:click.prevent="OpenCoScoreSheet()">
+                                        CO Scores
+                                    </x-buttons.btn-purple-blue-outline>
+
+                                    <x-buttons.btn-purple-blue-outline wire:click.prevent="OpenCoResultIndex()">
+                                        CO Results
+                                    </x-buttons.btn-purple-blue-outline>
+                                </div>
+                            @endif
+
+                            @if (Route::is('spillover.index') || Route::is('spillover.scoresheet') || Route::is('spillover.result'))
+                                <div class="mt-1d">
+                                    <x-buttons.btn-purple-blue-outline wire:click.prevent="OpenSpilloverScoreSheet()">
+                                        Spill-over Scores
+                                    </x-buttons.btn-purple-blue-outline>
+
+                                    <x-buttons.btn-purple-blue-outline wire:click.prevent="OpenSpilloveresultIndex()">
+                                        Spill-over Results
+                                    </x-buttons.btn-purple-blue-outline>
+                                </div>
+                            @endif
                         @endif
-
-
-
                     </div>
 
                     <button id="toggleSidebarMobileSearch" type="button"
@@ -106,28 +127,37 @@
                                 class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
                                 id="user-menu-button-2" aria-expanded="false" data-dropdown-toggle="dropdown-2">
                                 <span class="sr-only">Open user menu</span>
-                                <img class="w-8 h-8 rounded-full" src="{{ url('/') }}/images/users/neil-sims.png"
-                                    alt="user photo">
+                                {{-- <img class="w-8 h-8 rounded-full" src="{{ url('/') }}/images/users/neil-sims.png"
+                                    alt="user photo"> --}}
+                                <div class="relative w-8 h-8 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
+                                    <svg class="absolute w-38 h-38 text-gray-400 -left-1" fill="currentColor"
+                                        viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd"
+                                            d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd">
+                                        </path>
+                                    </svg>
+                                </div>
                             </button>
                         </div>
+
 
                         <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600"
                             id="dropdown-2">
                             <div class="px-4 py-3" role="none">
                                 <p class="text-sm text-gray-900 dark:text-white" role="none">
-                                    Neil Sims
+                                    {{ Auth::User()->name }}
                                 </p>
                                 <p class="text-sm font-medium text-gray-900 truncate dark:text-gray-300" role="none">
-                                    neil.sims@flowbite.com
+                                    {{ Str::title(Auth::User()->email) }}
                                 </p>
                             </div>
                             <ul class="py-1" role="none">
                                 <li>
                                     <a href="#"
                                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
-                                        role="menuitem">Dashboard</a>
+                                        role="menuitem">Profile</a>
                                 </li>
-                                <li>
+                                {{-- <li>
                                     <a href="#"
                                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
                                         role="menuitem">Settings</a>
@@ -136,7 +166,7 @@
                                     <a href="#"
                                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
                                         role="menuitem">Earnings</a>
-                                </li>
+                                </li> --}}
                                 <li>
                                     @livewire('livewire.log-out')
                                 </li>

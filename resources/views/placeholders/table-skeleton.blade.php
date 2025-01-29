@@ -12,8 +12,8 @@
                     fill="currentFill" />
             </svg>
             <span class="sr-only">Loading...</span>
-            <h2 class="inline-block mb-2 text-3xl font-extrabold tracking-wide text-gray-900 dark:text-white">
-                UNICORN SIC ITRU ADASTRA
+            <h2 class="md:inline-blocks mt-10 md:text-3xl font-extrabold tracking-wide text-gray-900 dark:text-white">
+                Initializing, Please wait!
             </h2>
         </div>
     </div>

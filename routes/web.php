@@ -3,7 +3,10 @@
 use App\Http\Controllers\ResultController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\HtmlMinifier;
+use App\Http\Middleware\RoleMiddleware;
 use App\Livewire\Carryover\CoIndex;
+use App\Livewire\Carryover\CoResultsIndex;
+use App\Livewire\Carryover\CoScores;
 use App\Livewire\CourseReg\AdminCourseRegistration;
 use App\Livewire\CourseReg\AdminCourseRegistrationCreate;
 use App\Livewire\CourseReg\CourseRegImport;
@@ -11,6 +14,7 @@ use App\Livewire\CourseReg\CourseRegImport;
 use App\Livewire\Courses\CourseCreateUpdate;
 use App\Livewire\Courses\CourseIndex;
 use App\Livewire\Courses\ImportCourses;
+use App\Livewire\Dashboards\CodDashboard;
 use App\Livewire\Departments\DepartmentImport;
 use App\Livewire\Departments\DeptCreateUpdate;
 use App\Livewire\Departments\DeptIndex;
@@ -27,22 +31,34 @@ use App\Livewire\Scores\ScoresImportPage;
 use App\Livewire\Semesters\SemesterIndex;
 use App\Livewire\Sessions\SessionCreateUpdate;
 use App\Livewire\Sessions\SessionIndex;
+use App\Livewire\Spillover\SpillIndex;
+use App\Livewire\Spillover\SpillScores;
 use App\Livewire\Students\Dashboard as StudentDashboard;
+use App\Livewire\Students\StudentCourseRegistration;
+use App\Livewire\Students\StudentCourseRegistrationCreate;
 use App\Livewire\Students\StudentsCreateUpdate;
 use App\Livewire\Students\StudentsImportView;
 use App\Livewire\Students\StudentsIndex;
+use App\Livewire\Users\UsersIndex;
 
 Route::middleware([HtmlMinifier::class])->group(function () {
 
-    Route::view('/', 'welcome');
+    // Route::view('/', 'welcome');
+    Route::get('/', function () {
+        return redirect()->route('login');
+    });
+
 
     Route::middleware(['auth:web', 'verified'])->group(function () {
 
-        Route::view('dashboard', 'dashboard')->name('dashboard')->lazy();
+        // Route::view('dashboard', 'dashboard')->name('dashboard');
+        Route::get('dashboard', CodDashboard::class)->name('dashboard')->lazy();
 
         Route::view('profile', 'profile')->name('profile');
 
+        // Route::middleware([RoleMiddleware::class . ':Admin'])->group(function () {
         Route::get('/grading-system', GradeIndex::class)->name('grade.index');
+        // });
 
         Route::get('/school-info/index', Index::class)->name('school-info.index');
 
@@ -85,6 +101,17 @@ Route::middleware([HtmlMinifier::class])->group(function () {
 
         Route::prefix('admin')->name('carryover.')->group(function () {
             Route::get('/carry-over-index', CoIndex::class)->name('index');
+            Route::get('/co-scoresheet', CoScores::class)->name('scoresheet');
+            Route::get('/co-result-index', CoResultsIndex::class)->name('result');
+            // Route::get('/carry/import', CourseRegImport::class)->name('import');
+            // Route::get('/carry-create', AdminCourseRegistrationCreate::class)->name('create');
+            // Route::get('/carry-create/{slug}', AdminCourseRegistrationCreate::class)->name('create-slug');
+        });
+
+        Route::prefix('admin')->name('spillover.')->group(function () {
+            Route::get('/spill-over-index', SpillIndex::class)->name('index');
+            Route::get('/spill-over-scoresheet', SpillScores::class)->name('scoresheet');
+            Route::get('/spill-over-result-index', CoResultsIndex::class)->name('result');
             // Route::get('/carry/import', CourseRegImport::class)->name('import');
             // Route::get('/carry-create', AdminCourseRegistrationCreate::class)->name('create');
             // Route::get('/carry-create/{slug}', AdminCourseRegistrationCreate::class)->name('create-slug');
@@ -94,14 +121,29 @@ Route::middleware([HtmlMinifier::class])->group(function () {
             Route::get('/index', ScoresheetIndex::class)->name('index');
             Route::get('/import', ScoresImportPage::class)->name('import');
         });
+
+        Route::prefix('users')->name('users.')->group(function () {
+            Route::get('/index', UsersIndex::class)->name('index');
+            // Route::get('/import', ScoresImportPage::class)->name('import');
+        });
+
         Route::get('/result/open', SupResultPage::class)->name('results.view');
-        Route::get('/result/index', ResultIndex::class)->name('results.index')->lazy();
+        Route::get('/result/index', ResultIndex::class)->name('results.index');
+
         Route::get('/results/view', [ResultController::class, 'view'])->name('results.page')->lazy();
+        Route::get('/co-results/view', [ResultController::class, 'co_view'])->name('co-results.page')->lazy();
     });
 
     Route::middleware(['auth:student'])->group(function () {
 
-        Route::get('/student', StudentDashboard::class)->name('students.dashboard');
+        // Route::get('/student', StudentDashboard::class)->name('students.dashboard');
+
+        Route::get('/student', function () {
+            return redirect()->route('student-course-reg.index');
+        })->name('students.dashboard');
+
+        Route::get('/student/course-reg', StudentCourseRegistration::class)->name('student-course-reg.index');
+        Route::get('/student/register-courses', StudentCourseRegistrationCreate::class)->name('student-course-reg.create');
 
         // Route::view('profile', 'profile')->name('profile');
     });

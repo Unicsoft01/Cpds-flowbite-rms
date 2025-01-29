@@ -11,6 +11,13 @@ php artisan livewire:publish --config
 ```
 
 ### Multi guard auth
+
 ```php
 php artisan make:model Admin -m -f
+```
+
+### seed Roles and permissions
+
+```php
+php artisan db:seed --class=RolesAndPermissionsSeeder
 ```

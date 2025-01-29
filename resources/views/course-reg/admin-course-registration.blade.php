@@ -30,7 +30,7 @@
                 <x-primary-button class="inline-flex items-center justify-center w-1/2 px-3 py-2 "
                     wire:click='OpenCreatePage'>
                     <x-icons.plus-icon />
-                    Single Student course reg.
+                    Student course reg.
                 </x-primary-button>
             </div>
         </div>

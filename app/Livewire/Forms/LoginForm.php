@@ -21,7 +21,7 @@ class LoginForm extends Form
     public string $password = '';
 
     #[Validate('required|string')]
-    public string $user_type = 'web';
+    public string $user_type = 'student';
 
     public $showEmailInput = false;
 

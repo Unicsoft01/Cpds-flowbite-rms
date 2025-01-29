@@ -7,12 +7,16 @@ use App\Models\Grades;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Livewire\Attributes\Lazy;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 #[Lazy()]
 class GradeIndex extends Component
 {
+
+    use AuthorizesRequests;
+
     public UpdateRecords $updatePrompt;
-    public $grades;
+    public Grades $grades;
 
     #[Validate('required|string')]
     public $a;
@@ -69,8 +73,10 @@ class GradeIndex extends Component
     public $f_grade_point;
 
 
-    public function mount()
+    public function mount(Grades $grades)
     {
+        $this->authorize('view', $grades);
+
         $this->grades = Grades::find(1);
 
         $this->a = $this->grades->a;
@@ -112,6 +118,8 @@ class GradeIndex extends Component
 
     public function updateGrades()
     {
+        $this->authorize('update', $this->grades);
+
         $this->validate();
         $this->grades->update($this->validate());
         $this->dispatch(

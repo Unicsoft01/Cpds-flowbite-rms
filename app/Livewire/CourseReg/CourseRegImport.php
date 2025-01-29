@@ -13,7 +13,7 @@ use App\Traits\FilteredUserCourses;
 use App\Traits\SharedMethods;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Auth;
-
+use Livewire\Attributes\Computed;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -46,12 +46,19 @@ class CourseRegImport extends Component
         $this->MakeClass();
     }
 
+    public function updatedLevel()
+    {
+        $this->checked = [];
+    }
+
     public function render()
     {
         return view('course-reg.course-reg-import', [
             'courses' => $this->getCourses($this->dept_id, $this->semester_id, $this->level_id),
         ]);
     }
+
+    // #[Computed()]
 
     public function uploadFile()
     {

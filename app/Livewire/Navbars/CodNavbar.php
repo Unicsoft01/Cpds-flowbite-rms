@@ -21,9 +21,29 @@ class CodNavbar extends Component
     {
         $this->redirectRoute('officials.index', navigate: true);
     }
-    
+
     public function render()
     {
         return view('navbars.cod-navbar');
+    }
+
+    public function OpenCoScoreSheet()
+    {
+        $this->redirectRoute('carryover.scoresheet', navigate: true);
+    }
+
+    public function OpenCoResultIndex()
+    {
+        $this->redirectRoute('carryover.result', navigate: true);
+    }
+
+    public function OpenSpilloverScoreSheet()
+    {
+        $this->redirectRoute('spillover.scoresheet', navigate: true);
+    }
+
+    public function OpenSpilloveresultIndex()
+    {
+        $this->redirectRoute('spillover.result', navigate: true);
     }
 }

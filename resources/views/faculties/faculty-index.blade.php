@@ -12,25 +12,29 @@
             <div class="items-center hidden mb-3 sm:flex sm:divide-x sm:divide-gray-100 sm:mb-0 dark:divide-gray-700">
                 <x-pagination-per-page />
 
-                <x-icons.bulk-delete />
+                @if (auth()->user()->hasRole('Admin') || auth()->user()->hasRole('Super_admin'))
+                    <x-icons.bulk-delete />
+                @endif
             </div>
 
             <div class="flex items-center ml-auto space-x-2 sm:space-x-3">
 
-                <x-light-button wire:click.prevent="OpenImportView()">
-                    <x-icons.file-import />
-                    Import CSV
-                </x-light-button>
+                @if (auth()->user()->hasRole('User'))
+                    <x-light-button wire:click.prevent="OpenImportView()">
+                        <x-icons.file-import />
+                        Import Excel
+                    </x-light-button>
+                @endif
 
                 <x-light-button wire:click.prevent="$dispatch('export-prompt')">
                     <x-icons.file-export />
-                    Export CSV
+                    Export Excel
                 </x-light-button>
 
                 <x-primary-button class="inline-flex items-center justify-center w-1/2 px-3 py-2 "
                     wire:click='OpenCreatePage'>
                     <x-icons.plus-icon />
-                    New Department
+                    New Faculty
                 </x-primary-button>
             </div>
         </div>
@@ -127,12 +131,16 @@
                                             Edit
                                         </x-primary-button>
 
-                                        <x-danger-button
-                                            wire:click="$dispatch('delete-prompt', {id: {{ $faculty->faculty_id }}})"
-                                            title="delete {{ $faculty->faculty }}">
-                                            <x-icons.trash-icon />
-                                            Delete
-                                        </x-danger-button>
+
+                                        @if (auth()->user()->hasRole('Admin') || auth()->user()->hasRole('Super_admin'))
+                                            <x-danger-button
+                                                wire:click="$dispatch('delete-prompt', {id: {{ $faculty->faculty_id }}})"
+                                                title="delete {{ $faculty->faculty }}">
+                                                <x-icons.trash-icon />
+                                                Delete
+                                            </x-danger-button>
+                                        @endif
+
 
                                     </td>
                                 </tr>
