@@ -11,7 +11,7 @@ class createUpdateDeptForm extends Form
     public ?Dept $dept;
     public $editMode = false;
 
-    // #[Validate('required|string|max:70|unique:depts')]
+    // #[Validate('required|max:70|unique:depts')]
     public $department;
 
     #[Validate('required', as: 'Faculty')]
@@ -30,13 +30,14 @@ class createUpdateDeptForm extends Form
 
         if ($this->editMode) {
             $this->validate([
+                'department' => 'required',
                 'faculty_id' => 'required|integer|exists:faculties,faculty_id',
             ]);
 
             $this->updateRecord();
         } else {
             $this->validate([
-                'department' => 'required|string',
+                'department' => 'required',
                 'faculty_id' => 'required|integer|exists:faculties,faculty_id',
             ]);
 
@@ -52,6 +53,6 @@ class createUpdateDeptForm extends Form
 
     public function updateRecord()
     {
-        $this->dept->update($this->validate());
+        $this->dept->update($this->pull());
     }
 }

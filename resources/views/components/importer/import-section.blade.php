@@ -38,6 +38,21 @@
             </div>
         </div>
     </div>
+
+    <div
+        class="p-4 mb-4 bg-white border border-gray-200 rounded-lg shadow-sm 2xl:col-span-2 dark:border-gray-700 sm:p-6 dark:bg-gray-800">
+
+        <div class="grid md:grid-cols-1 gap-2 mb-4">
+            <div class="flexs justify-center sm:col-full nowrap text-md text-gray-900 dark:text-gray-300 text-justify">
+                incase if you get an error message that file type not valied. Please kindly, reopen file in excel and
+                resave with .xlsx or resave with .csv extension
+            </div>
+            <div>
+
+                <img src="{{ url('/') }}/images/file_extension.png" alt="" class=" justify-center mx-auto">
+            </div>
+        </div>
+    </div>
     <div
         class="p-4 mb-4 bg-white border border-gray-200 rounded-lg shadow-sm 2xl:col-span-2 dark:border-gray-700 sm:p-6 dark:bg-gray-800">
         <div class="flex justify-start col-span-6">

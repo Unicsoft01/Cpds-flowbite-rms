@@ -47,7 +47,7 @@ new #[Layout('layouts.guest')] class extends Component {
         }
     </style>
 
-    <div x-data="{ showSplash: true }" x-init="setTimeout(() => showSplash = false, 3000)">
+    <div x-data="{ showSplash: true }" x-init="setTimeout(() => showSplash = false, 1500)">
         <div id="splash-screen" x-show="showSplash"
             class="fixed inset-0 flex items-center justify-center bg-gray-900 text-white z-50">
             <!-- Splash Screen Content -->

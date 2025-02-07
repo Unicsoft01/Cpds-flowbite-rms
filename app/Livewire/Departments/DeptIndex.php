@@ -155,6 +155,16 @@ class DeptIndex extends Component
     #[On('Confirm-Export')]
     public function exportSelected()
     {
+        if (!$this->faculty_id) {
+            session()->flash('error', 'A valid Faculty is required to export the list of departments in that faculty.');
+            return;
+        }
+
+        if (empty($this->checked)) {
+            session()->flash('error', 'No Department selected for export.');
+            return;
+        }
+
         return (new DepartmentsExport($this->checked))->download($this->generateFileName($this->faculty_id));
     }
 
@@ -196,7 +206,7 @@ class DeptIndex extends Component
             $facultyName = Faculties::find($faculty)?->faculty;
 
             if ($facultyName) {
-                return 'Departments_List_in_'
+                return 'Departments_in_'
                     . strtolower(str_replace(' ', '_', $facultyName))
                     . '_' . now()->format('Y_m_d_His')
                     . '.csv';

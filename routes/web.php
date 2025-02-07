@@ -140,6 +140,7 @@ Route::middleware([HtmlMinifier::class])->group(function () {
             Route::post('/upload-course-reg-file', 'uploadCourseRegFile')->name('course-reg-file.upload');
             Route::post('/upload-student-file', 'uploadStudentFile')->name('upload-student-file.upload');
             Route::post('/upload-scores-file', 'uploadScoresFile')->name('scores-file.upload');
+            Route::post('/upload-department-file', 'uploadDepartmentFile')->name('department-file.upload');
 
         });
     });

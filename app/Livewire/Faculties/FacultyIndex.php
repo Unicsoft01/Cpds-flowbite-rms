@@ -102,6 +102,11 @@ class FacultyIndex extends Component
     #[On('Confirm-Export')]
     public function exportSelected()
     {
+        if (empty($this->checked)) {
+            session()->flash('error', 'No Faculty selected for export.');
+            return;
+        }
+
         return (new FacultiesExport($this->checked))->download('Faculties_list.csv');
     }
 

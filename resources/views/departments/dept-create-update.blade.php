@@ -22,14 +22,14 @@
                 <div class="grid md:grid-cols-2 gap-6 mb-4">
                     <div>
                         <x-input-label for="department" value="Department" />
-                        <x-text-input wire:model.live="deptForm.department" id="department" type="text"
+                        <x-text-input wire:model="deptForm.department" id="department" type="text"
                             placeholder="Enter a valid name for Department" required />
                         <x-input-error :messages="$errors->get('deptForm.department')" class="mt-2" />
                     </div>
                     <div>
                         <x-input-label for="faculty" value="Faculty" />
 
-                        <select wire:model.live="deptForm.faculty_id" id="faculty_id" required
+                        <select wire:model="deptForm.faculty_id" id="faculty_id" required
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 uppercase">
                             <option value="">Select a faculty</option>
                             @foreach (\App\Models\Faculties::orderBy('faculty', 'asc')->get() as $facs)
