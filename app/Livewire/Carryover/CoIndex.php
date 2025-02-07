@@ -41,7 +41,7 @@ class CoIndex extends Component
 
     #[Url()]
     public $search = "";
-    public $paginate = 10;
+    public $paginate = 100;
 
     public $session_id;
     public $course_id;
@@ -103,8 +103,14 @@ class CoIndex extends Component
                 // Carryover conditions: grade_point < 1 OR no score
                 $q->where('course_registerations.grade_point', '<', 1)
                     ->orWhere('course_registerations.grade', '===', 'F')
-                    ->orWhere('course_registerations.is_spillover', false)
+                    // ->orWhere('course_registerations.is_carryover', true)
                     ->orWhereNull('course_registerations.score');
+            })    // Ensure they are NOT marked as spillover
+            ->whereNotExists(function ($subquery) {
+                $subquery->select(DB::raw(1))
+                    ->from('course_registerations as cr')
+                    ->whereColumn('cr.student_id', 'course_registerations.student_id')
+                    ->where('cr.is_spillover', true);
             })
             ->join('students', 'course_registerations.student_id', '=', 'students.student_id')
             ->join('levels', 'course_registerations.level_id', '=', 'levels.level_id')
@@ -174,26 +180,26 @@ class CoIndex extends Component
         return (new CourseRegisterationsExport($this->checked, $this->level_id, $this->semester_id, $this->session_id, $this->course_id))->download($this->generateFileName($this->level_id, $this->semester_id, $this->course_id, $this->session_id));
     }
 
-    #[On('Confirm-Multiple-Delete')]
-    public function deleteMultipleRecords()
-    {
-        if (empty($this->checked)) {
-            session()->flash('error', 'Please select one or multiple Students to delete associated Course registration for a class');
-            return;
-        }
-        CourseRegisterations::whereKey($this->checked)->delete();
-        $this->checked = [];
-        $this->selectAll = false;
-        // $this->selectPage = false;
-        $this->dispatch(
-            'swal',
-            $this->deletePrompt->Swal()
-        );
-    }
+    // #[On('Confirm-Multiple-Delete')]
+    // public function deleteMultipleRecords()
+    // {
+    //     if (empty($this->checked)) {
+    //         session()->flash('error', 'Please select one or multiple Students to delete associated Course registration for a class');
+    //         return;
+    //     }
+    //     CourseRegisterations::whereKey($this->checked)->delete();
+    //     $this->checked = [];
+    //     $this->selectAll = false;
+    //     // $this->selectPage = false;
+    //     $this->dispatch(
+    //         'swal',
+    //         $this->deletePrompt->Swal()
+    //     );
+    // }
 
     public function OpenImportView()
     {
-        $this->redirectRoute('course-reg.import', navigate: true);
+        $this->redirectRoute('carryover.import', navigate: true);
     }
 
     public function generateFileName($level = null, $semester = null, $course = null, $session = null)

@@ -1,6 +1,6 @@
 <div>
 
-    <x-pagetop.cod-page-top>
+    <x-pagetop.cod-page-top pageHeader="Semester results">
         {{-- alert --}}
         @if (session()->has('error'))
             <x-alerts.alert-bordered-danger>
@@ -189,7 +189,7 @@
                                     <tr>
                                         <td colspan="5"
                                             class="p-4 text-base text-center font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                            No records available at the moment, Create or import some!!</td>
+                                            Use filters to fetch students records!!!</td>
                                     </tr>
                                 @endforelse
                             </tbody>

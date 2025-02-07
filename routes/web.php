@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Controllers\UploaderController;
 use App\Http\Controllers\ResultController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\HtmlMinifier;
 use App\Http\Middleware\RoleMiddleware;
+use App\Livewire\Carryover\CoCourseRegImport;
 use App\Livewire\Carryover\CoIndex;
 use App\Livewire\Carryover\CoResultsIndex;
 use App\Livewire\Carryover\CoScores;
@@ -103,7 +105,7 @@ Route::middleware([HtmlMinifier::class])->group(function () {
             Route::get('/carry-over-index', CoIndex::class)->name('index');
             Route::get('/co-scoresheet', CoScores::class)->name('scoresheet');
             Route::get('/co-result-index', CoResultsIndex::class)->name('result');
-            // Route::get('/carry/import', CourseRegImport::class)->name('import');
+            Route::get('/carry-over/import', CoCourseRegImport::class)->name('import');
             // Route::get('/carry-create', AdminCourseRegistrationCreate::class)->name('create');
             // Route::get('/carry-create/{slug}', AdminCourseRegistrationCreate::class)->name('create-slug');
         });
@@ -132,6 +134,14 @@ Route::middleware([HtmlMinifier::class])->group(function () {
 
         Route::get('/results/view', [ResultController::class, 'view'])->name('results.page')->lazy();
         Route::get('/co-results/view', [ResultController::class, 'co_view'])->name('co-results.page')->lazy();
+
+        Route::controller(UploaderController::class)->group(function () {
+            Route::post('/upload-course-file', 'uploadCoursesFile')->name('course-file.upload');
+            Route::post('/upload-course-reg-file', 'uploadCourseRegFile')->name('course-reg-file.upload');
+            Route::post('/upload-student-file', 'uploadStudentFile')->name('upload-student-file.upload');
+            Route::post('/upload-scores-file', 'uploadScoresFile')->name('scores-file.upload');
+
+        });
     });
 
     Route::middleware(['auth:student'])->group(function () {

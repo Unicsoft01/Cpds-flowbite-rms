@@ -91,6 +91,7 @@ class AdminCourseRegistrationCreate extends Component
                     [
                         'student_id' => $this->student->student_id,
                         'course_id' => $courseId,
+                        'dept_id' => $this->student->dept_id,
                         'session_id' => $this->session_id,
                         'semester_id' => $this->semester_id,
                         'level_id' => $this->level_id,

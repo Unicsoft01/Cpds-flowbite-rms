@@ -202,7 +202,7 @@ class AdminCourseRegistration extends Component
             session()->flash('error', 'Please select one or multiple Students to delete associated Course registration for a class');
             return;
         }
-        CourseRegisterations::whereKey($this->checked)->delete();
+        CourseRegisterations::whereIn('student_id', $this->checked)->delete();
         $this->checked = [];
         $this->selectAll = false;
         // $this->selectPage = false;

@@ -2,221 +2,120 @@
     <div class="grid grid-cols-1 px-4 pt-6 xl:grid-cols-3 xl:gap-4 dark:bg-gray-900 mb-2">
         <div class="mb-4 col-span-full xl:mb-2">
 
-
-            <h1 class="text-md font-semibold text-gray-900 sm:text-2xl dark:text-white capitalize" style="">
-
-                @if ($courseForm->level_id && $courseForm->dept_id && $courseForm->semester_id)
-                    @php
-                        $dept = \App\Models\Dept::find($courseForm->dept_id)->department;
-                        $see = \App\Models\Semester::find($courseForm->semester_id)->sem;
-                    @endphp
-                    {{ $level }} {{ $see }} Sem. Course for {{ $dept }} Dept
-                @else
-                    New Course Registeration
-                @endif
-            </h1>
         </div>
     </div>
-    <div class="grid grid-cols-1 px-4 xl:grid-cols-1 xl:gap-4">
-        <form wire:submit="CreateOrUpdate" novalidate>
-            {{-- sort --}}
-            <div
-                class="p-4 mb-4 bg-white border border-gray-200 rounded-lg shadow-sm 2xl:col-span-2 dark:border-gray-700 sm:p-6 dark:bg-gray-800">
+    <div class="mt-5s grid grid-cols-1 px-4 xl:grid-cols-1 xl:gap-4">
+        <div class="w-full mx-auto max-w-xl p-6 space-y-8d sm:p-8 bg-white rounded-lg shadow dark:bg-gray-800">
 
-                <div class="grid md:grid-cols-3 gap-6 mb-0">
-                    <div>
-                        <x-dropdowns.select-options text="Select a Department" wire:model="courseForm.dept_id"
-                            id="dept_id" required>
-                            @forelse (\App\Models\Dept::where('user_id', '=', Auth::user()->user_id)->get() as $dep)
-                                <option value="{{ $dep->dept_id }}">
-                                    {{ Str::of($dep->department)->headline }}
-                                </option>
-                            @empty
-                                <option value="">Go create some Dept first!</option>
-                            @endforelse
-                        </x-dropdowns.select-options>
+            <x-auth-session-status
+                class="rounded dark:bg-gray-600 bg-gray-200 p-3 text-center text-gray-900 dark:text-white"
+                :status="session('status')" />
 
-                        <x-input-error :messages="$errors->get('courseForm.dept_id')" class="mt-2" />
-                    </div>
+            <h2 class="md:text-2xl font-bold text-center text-gray-900 dark:text-white">
+                Fill new Student details below
+            </h2>
+            <form class="mt-8 space-y-6" wire:submit="StudentRegister" novalidate>
 
-                    <div>
-                        <x-dropdowns.select-options text="Select a Level" wire:model="courseForm.level_id"
-                            id="level_id" required>
-                            @foreach (\App\Models\Level::get() as $level)
-                                <option value="{{ $level->level_id }}">
-                                    {{ $level->level }}
-                                </option>
-                            @endforeach
-                        </x-dropdowns.select-options>
+                <!-- Name -->
+                <div>
+                    <x-input-label for="surname" :value="__('Surname')" />
 
-                        <x-input-error :messages="$errors->get('courseForm.level_id')" class="mt-2" />
-                    </div>
+                    <x-text-input wire:model="surname" id="surname" type="text" name="surname" autofocus
+                        autocomplete="surname" placeholder="Enter your surname" required />
 
-                    <div>
-                        <x-dropdowns.select-options text="Select Semester" wire:model="courseForm.semester_id"
-                            id="semester_id" required>
-                            @foreach (\App\Models\Semester::get() as $sem)
-                                <option value="{{ $sem->semester_id }}">
-                                    {{ $sem->sem }} Semester
-                                </option>
-                            @endforeach
-                        </x-dropdowns.select-options>
-
-                        <x-input-error :messages="$errors->get('courseForm.semester_id')" class="mt-2" />
-                    </div>
-
-
+                    <x-input-error :messages="$errors->get('surname')" class="mt-2" />
                 </div>
-            </div>
+                <div>
+                    <x-input-label for="middlename" :value="__('Middlename (Optional) ')" />
 
-            @if ($courseForm->editMode)
-                <div
-                    class="p-4 mb-4 bg-white border border-gray-200 rounded-lg shadow-sm 2xl:col-span-2 dark:border-gray-700 sm:p-6 dark:bg-gray-800">
+                    <x-text-input wire:model="middlename" id="middlename" type="text" name="middlename"
+                        placeholder="Enter a middlename" />
 
-                    <div
-                        class="grid @if ($courseForm->editMode) ) md:grid-cols-4 @else md:grid-cols-5 @endif gap-6 mb-4">
-                        <div>
-                            <x-input-label for="course_title" value="Course Title" />
-                            <x-text-input wire:model="courseForm.course_title" type="text"
-                                placeholder="E.g Introduction to Computer" required />
-                            <x-input-error :messages="$errors->get('courseForm.course_title')" class="mt-2" />
-                        </div>
-
-                        <div>
-                            <x-input-label for="course_code" value="Course Code" />
-                            <x-text-input wire:model="courseForm.course_code" id="course_code" type="text" required
-                                placeholder="E.g csc101" required />
-                            <x-input-error :messages="$errors->get('courseForm.course_code')" class="mt-2" />
-                        </div>
-
-
-
-                        <div>
-                            <x-input-label for="unit" value="Course Unit" />
-                            <x-dropdowns.select-options text="Course Unit" wire:model="courseForm.unit" id="unit"
-                                required>
-                                @foreach (\App\Enums\CourseUnits::cases() as $unit)
-                                    @if ($loop->iteration > 1)
-                                        <option value="{{ $unit->value }}">
-                                            {{ $unit->value }} Units
-                                        </option>
-                                    @else
-                                        <option value="{{ $unit->value }}">
-                                            {{ $unit->value }} Unit
-                                        </option>
-                                    @endif
-                                @endforeach
-                            </x-dropdowns.select-options>
-
-                            <x-input-error :messages="$errors->get('courseForm.unit')" class="mt-2" />
-                        </div>
-
-                        <div>
-                            <x-input-label for="status" value="Course Status" />
-                            <select wire:model="courseForm.status" id="status" required
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                @foreach (\App\Enums\CourseStatus::cases() as $status)
-                                    <option value="{{ $status->value }}">
-                                        {{ $status->name }} Course
-                                    </option>
-                                @endforeach
-                            </select>
-                            <x-input-error :messages="$errors->get('courseForm.status')" class="mt-2" />
-                        </div>
-
-                    </div>
+                    <x-input-error :messages="$errors->get('middlename')" class="mt-2" />
                 </div>
-            @else
-                @foreach ($courseForm->formInputs as $key => $input)
-                    <div
-                        class="p-4 mb-4 bg-white border border-gray-200 rounded-lg shadow-sm 2xl:col-span-2 dark:border-gray-700 sm:p-6 dark:bg-gray-800">
-                        {{-- {{ $key }} --}}
+                <div>
+                    <x-input-label for="firstname" :value="__('Firstname')" />
 
-                        <div
-                            class="grid @if ($courseForm->editMode) ) md:grid-cols-4 @else md:grid-cols-5 @endif gap-6 mb-4">
-                            <div>
-                                <x-input-label for="course_title" value="Course Title" />
-                                <x-text-input wire:model="courseForm.course_title.{{ $key }}" type="text"
-                                    placeholder="E.g Introduction to Computer" required />
-                                <x-input-error :messages="$errors->get('courseForm.course_title')" class="mt-2" />
-                            </div>
+                    <x-text-input wire:model="firstname" id="firstname" type="text" name="firstname"
+                        placeholder="Enter your firstname" required />
 
-                            <div>
-                                <x-input-label for="course_code" value="Course Code" />
-                                <x-text-input wire:model="courseForm.course_code.{{ $key }}" id="course_code"
-                                    type="text" required placeholder="E.g csc101" required />
-                                <x-input-error :messages="$errors->get('courseForm.course_code')" class="mt-2" />
-                            </div>
-
-                            <div>
-                                <x-input-label for="unit" value="Course Unit" />
-                                <select wire:model="courseForm.unit.{{ $key }}" id="unit" required
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                    <option value="">Course Unit</option>
-                                    @forelse (\App\Enums\CourseUnits::cases() as $unit)
-                                        @if ($loop->iteration > 1)
-                                            <option value="{{ $unit->value }}">
-                                                {{ $unit->value }} Units
-                                            </option>
-                                        @else
-                                            <option value="{{ $unit->value }}">
-                                                {{ $unit->value }} Unit
-                                            </option>
-                                        @endif
-                                    @empty
-                                        <option value="">You Should go create records first</option>
-                                    @endforelse
-                                </select>
-                                <x-input-error :messages="$errors->get('courseForm.unit')" class="mt-2" />
-                            </div>
-
-                            <div>
-                                <x-input-label for="status" value="Course Status" />
-                                <select wire:model="courseForm.status.{{ $key }}" id="status" required
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                    <option value="">Course Status</option>
-                                    @foreach (\App\Enums\CourseStatus::cases() as $status)
-                                        <option value="{{ $status->value }}">
-                                            {{ $status->name }} Course
-                                        </option>
-                                    @endforeach
-                                </select>
-                                <x-input-error :messages="$errors->get('courseForm.status')" class="mt-2" />
-                            </div>
-
-                            @if (!$courseForm->editMode)
-                                <div class="flex justify-evenly ">
-
-                                    <x-primary-button
-                                        wire:click.prevent="addCourseForm({{ $courseForm->inputCounter }})"
-                                        data-tooltip-target="tooltip-default" type="button" class="mt-7 pr-2"
-                                        style="border-radius: 4pc;">
-                                        <x-icons.plus-icon class="w-7 h-10" />
-                                    </x-primary-button>
-
-                                    <x-danger-button wire:click.prevent="removeCourseForm({{ $key }})"
-                                        type="button" class="mt-7 pr-3" style="border-radius: 4pc;">
-                                        <x-icons.minus-icon />
-                                    </x-danger-button>
-                                </div>
-                            @endif
-
-                        </div>
-                    </div>
-                @endforeach
-            @endif
-            <div
-                class="p-4 mb-4 bg-white border border-gray-200 rounded-lg shadow-sm 2xl:col-span-2 dark:border-gray-700 sm:p-6 dark:bg-gray-800">
-                <div class="flex justify-end col-span-6 sm:col-full">
-                    @if ($courseForm->editMode)
-                        <x-primary-button value="Update Record" />
-                    @else
-                        <x-primary-button value="Save Record" />
-                    @endif
+                    <x-input-error :messages="$errors->get('firstname')" class="mt-2" />
                 </div>
-            </div>
-        </form>
 
-        @include('components.alerts')
+                <div>
+                    <x-input-label for="regno" :value="__('Reg/Mat No.')" />
+
+                    <x-text-input wire:model="regno" id="regno" type="text" name="regno"
+                        placeholder="Enter your Reg/Mat No." required />
+
+                    <x-input-error :messages="$errors->get('regno')" class="mt-2" />
+                </div>
+
+                <div>
+                    <x-input-label for="faculty_id" :value="__('Faculty')" />
+
+                    <select wire:model.live="faculty_id" id="faculty_id" required
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 text-center capitalize">
+                        <option value="">Select your faculties</option>
+                        @forelse ($faculties as $faculty)
+                            <option value="{{ $faculty->faculty_id }}">
+                                {{ $faculty->faculty }}
+                            </option>
+                        @empty
+                            <option value="">No Faculty at the moment!</option>
+                        @endforelse
+                    </select>
+                    <x-input-error :messages="$errors->get('faculty_id')" class="mt-2" />
+                </div>
+
+                <div>
+                    <x-input-label for="dept_id" :value="__('Department')" />
+
+                    <select wire:model.live="dept_id" id="dept_id" required
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 text-center capitalize">
+                        <option value="">Select your Department</option>
+                        @forelse ($departments as $dept)
+                            <option value="{{ $dept->dept_id }}">
+                                {{ $dept->department }}
+                            </option>
+                        @empty
+                            <option value="">No department at the moment!</option>
+                        @endforelse
+                    </select>
+                    <x-input-error :messages="$errors->get('dept_id')" class="mt-2" />
+                </div>
+
+                <div>
+                    <x-input-label for="set" :value="__('Academic set')" />
+                    <select wire:model.live="set" id="set" required
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 text-center">
+                        <option value="">Select your Academic set</option>
+                        @forelse (\App\Models\AcademicSessions::orderBy('session', 'desc')->get(['session_id', 'session']) as $set)
+                            <option value="{{ $set->session_id }}">
+                                {{ $set->session }}/{{ $set->session + 1 }}
+                            </option>
+                        @empty
+                            <option value="">Go create some Session first!</option>
+                        @endforelse
+                    </select>
+                    <x-input-error :messages="$errors->get('set')" class="mt-2" />
+                </div>
+
+                <!-- Password -->
+                <div class="mt-4">
+                    <x-input-label for="password" :value="__('studet will be able to login with below Password')" />
+
+                    <x-text-input value="password" class="block mt-1 w-full" type="text" readonly />
+                </div>
+
+                <x-primary-button class="w-full">
+                    {{ __('Save student profile') }}
+                </x-primary-button>
+
+
+            </form>
+
+
+            @include('components.alerts')
+        </div>
     </div>
-</div>

@@ -3,14 +3,14 @@
 <div>
     <div style="width:1500px;margin-left:20%;">
         <div title="logo" style="width:120px;float:left;">
-            <img src="{{ url('/') }}/sbyte/logo.jpg" width="90px" height="110px">
+            <img src="{{ url('/') }}/sbyte/logo.jpg" width="100px" height="110px">
         </div>
 
         <div title="logo" style="width:600px;float:left;text-transform:uppercase;font-weight:bold;line-height:15px;">
             <h2 class="inline-block mb-2 text-3xl font-extrabold tracking-wide text-gray-900 dark:text-white">
                 PRINCE
                 ABUBAKAR AUDU UNIVERSITY, ANYIGBA</h2>
-            <p class="tracking-normal" style="font-size:14px;">
+            <p class="tracking-normal leading-normal2 font-bold text-3xl">
                 centre for predegree and diploma studies
                 <br>
                 Faculty of {{ $dept->facultyMember->faculty }}
@@ -22,7 +22,7 @@
         </div>
 
         <div title="logo" style="width:400px;float:left;">
-            <img src="{{ url('/') }}/sbyte/logo.jpg" width="90px" height="110px">
+            <img src="{{ url('/') }}/sbyte/logo.jpg" width="100px" height="110px">
         </div>
         <br><br><br>
     </div>
@@ -33,7 +33,7 @@
         }
 
         .mytab tr th {
-            font-size: 9px;
+            font-size: 12px;
             text-align: center;
             border: 1px solid black !important;
             overflow: hidden;
@@ -55,19 +55,19 @@
         }
 
         * {
-            font-size: 7px;
-            font-weight: bold;
+            /* font-size: 12px;
+            font-weight: bold; */
             text-align: center;
         }
 
         .smallSubj {
-            font-size: 8px;
+            font-size: 10px;
             font-weight: bolder;
         }
 
         .aggr_unit {
             font-weight: bolder;
-            font-size: 10px;
+            font-size: 12px;
         }
 
         .mytab tr {
@@ -87,9 +87,8 @@
 
 
 
-    {{-- <div class="toggle_container" style="display: block;">
-    <div class="block" style="font-size:15px;text-decoration:underline;"> SUPPLEMENTARY RESULT(S) </div>
-</div> --}}
+
+
     <br>
 
     <table class="print:hidden mb-5" align="center" width="50%">
@@ -120,20 +119,23 @@
             font-weight: normal;
         }
     </style>
+
+    <div class="mt-15 print:mt-12">&nbsp;</div>
+
     <table align="center" width="90%" class="Tab" border="1">
         <tbody>
             <tr>
-                <td colspan="2" rowspan="2">
-                    <p style="font-size:12px;">Academic Session: {{ $session }}/{{ $session + 1 }}</p>
+                <td class="font-bold print:font-bold" colspan="2" rowspan="2">
+                    <p>Academic Session: {{ $session }}/{{ $session + 1 }}</p>
                 </td>
-                <td colspan="2" rowspan="2">
-                    <p style="font-size:12px;">Level: &nbsp;{{ $level }} </p>
+                <td class="font-bold print:font-bold" colspan="2" rowspan="2">
+                    <p>Level: &nbsp;{{ $level }} </p>
                 </td>
-                <td colspan="2" rowspan="2">
-                    <p style="font-size:12px;">Semester: &nbsp;{{ $semester }} Semester</p>
+                <td class="font-bold print:font-bold" colspan="2" rowspan="2">
+                    <p>Semester: &nbsp;{{ $semester }} Semester</p>
                 </td>
-                <td colspan="2" rowspan="2">
-                    <p style="font-size:12px;">PROGRAMME: &nbsp;Diploma {{ $dept->department }}</p>
+                <td class="font-bold print:font-bold" colspan="2" rowspan="2">
+                    <p>PROGRAMME: &nbsp;Diploma {{ $dept->department }}</p>
                 </td>
             </tr>
         </tbody>

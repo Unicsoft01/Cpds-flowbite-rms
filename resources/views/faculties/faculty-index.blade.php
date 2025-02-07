@@ -1,6 +1,6 @@
 <div>
 
-    <x-pagetop.cod-page-top>
+    <x-pagetop.cod-page-top pageHeader="Faculty list">
         {{-- alert --}}
         @if (session()->has('error'))
             <x-alerts.alert-bordered-danger>

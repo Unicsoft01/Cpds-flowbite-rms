@@ -9,7 +9,7 @@ use App\Imports\CoursesImport;
 use App\Livewire\Forms\UpdateRecords;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -30,89 +30,90 @@ class ImportCourses extends Component
 
     public $level_id, $semester_id, $errorss = [];
 
-    public function updatedimportFile()
-    {
-        $this->validate([
-            'importFile' => 'required|mimes:xlsx,csv|max:2048', // Only Excel/CSV files, max 2MB
-        ]);
-    }
 
     public function render()
     {
         return view('courses.import-courses');
     }
 
-    public function uploadFile()
-    {
+    // public function updatedimportFile()
+    // {
+    //     $this->validate([
+    //         'importFile' => 'required|mimes:xlsx,csv|max:2048', // Only Excel/CSV files, max 2MB
+    //     ]);
+    // }
 
-        $this->level_id = $this->determineClass($this->level)['level'];
-        $this->semester_id = $this->determineClass($this->level)['sem'];
-        // $this->validate();
+    // public function uploadFile()
+    // {
 
-        $this->validate([
-            'level' => 'required',
-            'importFile' => 'required|mimes:xlsx,csv|max:2048',
-            'dept_id' => 'required|integer|exists:depts,dept_id',
-            'level_id' => 'required|integer|exists:levels,level_id',
-            'semester_id' => 'required|integer|exists:semesters,semester_id',
-        ]);
-        // session()->flash('error', 'lorem errors');
-        try {
-            $name = $this->importFile->getRealPath();
+    //     $this->level_id = $this->determineClass($this->level)['level'];
+    //     $this->semester_id = $this->determineClass($this->level)['sem'];
+    //     // $this->validate();
 
-            Excel::import(new CoursesImport($this->dept_id, $this->level_id, $this->semester_id,  Auth::id()), $name);
+    //     $this->validate([
+    //         'level' => 'required',
+    //         'importFile' => 'required|mimes:xlsx,csv|max:2048',
+    //         'dept_id' => 'required|integer|exists:depts,dept_id',
+    //         'level_id' => 'required|integer|exists:levels,level_id',
+    //         'semester_id' => 'required|integer|exists:semesters,semester_id',
+    //     ]);
+    //     // session()->flash('error', 'lorem errors');
+    //     try {
+    //         $name = $this->importFile->getRealPath();
 
-            $this->dispatch(
-                'swal',
-                $this->updatePrompt->Swal()
-            );
+    //         Excel::import(new CoursesImport($this->dept_id, $this->level_id, $this->semester_id,  Auth::id()), $name);
 
-            $this->importFile = null; // Reset file input
-        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
-            $failures = $e->failures();
-            $this->errorss = [];
-            foreach ($failures as $failure) {
-                $this->errorss[] = [
-                    'row' => $failure->row(),
-                    'attribute' => $failure->attribute(),
-                    'error' => $failure->errors()[0],
-                ];
-                session()->flash('errorss', $this->errorss);
-            }
-        } catch (\Exception $e) {
-            $this->errorss = [['row' => 'N/A', 'attribute' => 'File', 'error' => $e->getMessage()]];
-            session()->flash('errorss', $this->errorss);
-        }
+    //         $this->dispatch(
+    //             'swal',
+    //             $this->updatePrompt->Swal()
+    //         );
 
-        // if (!is_null($this->importFile)) {
-        //     $name = $this->importFile->getRealPath();
+    //         $this->importFile = null; // Reset file input
+    //     } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+    //         $failures = $e->failures();
+    //         $this->errorss = [];
+    //         foreach ($failures as $failure) {
+    //             $this->errorss[] = [
+    //                 'row' => $failure->row(),
+    //                 'attribute' => $failure->attribute(),
+    //                 'error' => $failure->errors()[0],
+    //             ];
+    //             session()->flash('errorss', $this->errorss);
+    //         }
+    //     } catch (\Exception $e) {
+    //         $this->errorss = [['row' => 'N/A', 'attribute' => 'File', 'error' => $e->getMessage()]];
+    //         session()->flash('errorss', $this->errorss);
+    //     }
 
-        //     Excel::import(new CoursesImport($this->dept_id, $this->level_id, $this->semester_id,  Auth::id()), $name);
+    //     // if (!is_null($this->importFile)) {
+    //     //     $name = $this->importFile->getRealPath();
 
-        //     $this->dispatch(
-        //         'swal',
-        //         $this->updatePrompt->Swal()
-        //     );
-        // }
-    }
+    //     //     Excel::import(new CoursesImport($this->dept_id, $this->level_id, $this->semester_id,  Auth::id()), $name);
 
-    public function determineClass($levelSemester)
-    {
-        if ($this->level == 1) {
-            $this->level_id = 1;
-            $this->semester_id = 1;
-        } elseif ($this->level == 2) {
-            $this->level_id = 1;
-            $this->semester_id = 2;
-        } elseif ($this->level == 3) {
-            $this->level_id = 2;
-            $this->semester_id = 1;
-        } elseif ($this->level == 4) {
-            $this->level_id = 2;
-            $this->semester_id = 2;
-        }
-        return ['level' => $this->level_id, 'sem' => $this->semester_id];
-    }
+    //     //     $this->dispatch(
+    //     //         'swal',
+    //     //         $this->updatePrompt->Swal()
+    //     //     );
+    //     // }
+    // }
+
+    // public function determineClass($levelSemester)
+    // {
+    //     if ($this->level == 1) {
+    //         $this->level_id = 1;
+    //         $this->semester_id = 1;
+    //     } elseif ($this->level == 2) {
+    //         $this->level_id = 1;
+    //         $this->semester_id = 2;
+    //     } elseif ($this->level == 3) {
+    //         $this->level_id = 2;
+    //         $this->semester_id = 1;
+    //     } elseif ($this->level == 4) {
+    //         $this->level_id = 2;
+    //         $this->semester_id = 2;
+    //     }
+    //     return ['level' => $this->level_id, 'sem' => $this->semester_id];
+    // }
 
     public function downloadSample(): BinaryFileResponse
     {

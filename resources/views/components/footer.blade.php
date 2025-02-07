@@ -60,6 +60,6 @@
                 </div>
             </footer> --}}
 <p class="my-5 text-sm text-center text-gray-700 dark:text-gray-500">
-    &copy;2024-{{ date('Y') }} CPDS-Online | <a href="https://wa.me/+2349077957088" class="font-bold text-blue-600 hover:underline"
+    &copy;2024-{{ date('Y') }} CPDS-PAAU | <a href="https://wa.me/+2349077957088" class="font-bold text-blue-600 hover:underline"
         target="_blank">Unicsoft Tech. </a> All rights reserved.
 </p>

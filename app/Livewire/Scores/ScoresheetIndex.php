@@ -281,22 +281,22 @@ class ScoresheetIndex extends Component
         return (new ScoreSheetExport($this->checked, $this->level_id, $this->semester_id, $this->set, $this->course))->download($this->generateFileName($this->level_id, $this->semester_id, $this->course, $this->set));
     }
 
-    #[On('Confirm-Multiple-Delete')]
-    public function deleteMultipleRecords()
-    {
-        if (empty($this->checked)) {
-            session()->flash('error', 'Please select one or multiple Students to delete associated Course registration for a class');
-            return;
-        }
-        CourseRegisterations::whereKey($this->checked)->delete();
-        $this->checked = [];
-        $this->selectAll = false;
-        // $this->selectPage = false;
-        $this->dispatch(
-            'swal',
-            $this->deletePrompt->Swal()
-        );
-    }
+    // #[On('Confirm-Multiple-Delete')]
+    // public function deleteMultipleRecords()
+    // {
+    //     if (empty($this->checked)) {
+    //         session()->flash('error', 'Please select one or multiple Students to delete associated Course registration for a class');
+    //         return;
+    //     }
+    //     CourseRegisterations::whereKey($this->checked)->delete();
+    //     $this->checked = [];
+    //     $this->selectAll = false;
+    //     // $this->selectPage = false;
+    //     $this->dispatch(
+    //         'swal',
+    //         $this->deletePrompt->Swal()
+    //     );
+    // }
 
     public function OpenImportView()
     {

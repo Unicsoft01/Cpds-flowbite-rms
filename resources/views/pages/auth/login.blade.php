@@ -57,7 +57,7 @@ new #[Layout('layouts.guest')] class extends Component {
                 <!-- Main Product Name Block -->
                 <div class="text-center mb-6 animate-zoom-in">
                     <h2 class="inline-block text-4xl font-extrabold tracking-wide text-white">
-                        CPDS-Online
+                        CPDS-PAAU
                     </h2><sup>&copy;</sup>
                 </div>
 

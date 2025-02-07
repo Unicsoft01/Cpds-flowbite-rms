@@ -36,7 +36,7 @@ class createUpdateDeptForm extends Form
             $this->updateRecord();
         } else {
             $this->validate([
-                'department' => 'required|string|max:70|unique:depts',
+                'department' => 'required|string',
                 'faculty_id' => 'required|integer|exists:faculties,faculty_id',
             ]);
 

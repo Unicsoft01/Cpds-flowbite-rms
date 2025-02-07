@@ -65,6 +65,11 @@ class Students extends Authenticatable
         ];
     }
 
+    public function Academicset(): BelongsTo
+    {
+        return $this->belongsTo(AcademicSessions::class, 'set', 'session_id');
+    }
+
     public function department(): BelongsTo
     {
         return $this->belongsTo(Dept::class, 'dept_id');
@@ -100,9 +105,9 @@ class Students extends Authenticatable
         $term = "%$term%";
         $query->where(function ($query) use ($term) {
             $query->where('surname', 'like', $term)
-            ->orWhere('middlename', 'like', $term)
-            ->orWhere('firstname', 'like', $term)
-            ->orWhere('regno', 'like', $term);
+                ->orWhere('middlename', 'like', $term)
+                ->orWhere('firstname', 'like', $term)
+                ->orWhere('regno', 'like', $term);
         });
     }
 

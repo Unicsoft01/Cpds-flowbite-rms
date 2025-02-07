@@ -18,6 +18,7 @@ class CourseRegisterations extends Model
         'semester_id',
         'student_id',
         'course_id',
+        'dept_id',
         'session_id',
         'level_id',
         'registered_by',

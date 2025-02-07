@@ -79,9 +79,11 @@ class CoResultsIndex extends Component
             ])
             ->where('user_id', Auth::id())
             ->where(function ($q) {
-                $q->where('grade_point', '<', 1)
-                    ->orWhere('grade', 'F')
-                    ->orWhereNull('score');
+                // Carryover conditions: grade_point < 1 OR no score
+                $q->where('course_registerations.grade_point', '<', 1)
+                    ->orWhere('course_registerations.grade', '===', 'F')
+                    ->orWhere('course_registerations.is_carryover', true)
+                    ->orWhereNull('course_registerations.score');
             })
             ->when($this->dept_id, function ($query) {
                 // Filter by department using whereHas
@@ -148,7 +150,7 @@ class CoResultsIndex extends Component
     public function viewSelectionResults()
     {
         $this->SelectionResults();
-        
+
         return redirect()->route('co-results.page', ['students' => $this->checked, 'level_id' => $this->determineClass($this->level)['level'], 'semester_id' => $this->determineClass($this->level)['sem'], 'session_id' => $this->set, 'dept_id' => $this->dept_id]);
     }
 

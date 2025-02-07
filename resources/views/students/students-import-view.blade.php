@@ -1,14 +1,18 @@
 <div>
     <div class="grid grid-cols-1 px-4 pt-6 xl:grid-cols-3 xl:gap-4 dark:bg-gray-900 mb-2">
 
-        @if (session()->has('error'))
-            <x-alerts.alert-bordered-danger>
-                {{ session('error') }}
-            </x-alerts.alert-bordered-danger>
-        @endif
-
         <div class="mb-4 col-span-full xl:mb-2">
+            @if (session('error'))
+                <x-alerts.alert-bordered-danger>
+                    {{ session('error') }}
+                </x-alerts.alert-bordered-danger>
+            @endif
 
+            @if (session('success'))
+                <x-alerts.alert-bordered-success>
+                    {{ session('success') }}
+                </x-alerts.alert-bordered-success>
+            @endif
             <h1 class="text-md font-semibold text-gray-900 sm:text-2xl dark:text-white" style="">
                 New Students from Excel
             </h1>
@@ -28,7 +32,8 @@
 
     </div>
     <div class="grid grid-cols-1 px-4 xl:grid-cols-1 xl:gap-4">
-        <form wire:submit="uploadFile" novalidate>
+        <form action="{{ route('upload-student-file.upload') }}" method="POST" enctype="multipart/form-data" novalidate>
+            @csrf
             {{-- sort --}}
             <div
                 class="p-4 mb-4 bg-white border border-gray-200 rounded-lg shadow-sm 2xl:col-span-2 dark:border-gray-700 sm:p-6 dark:bg-gray-800">

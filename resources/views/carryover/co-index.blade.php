@@ -1,6 +1,7 @@
 <div>
 
-    <x-pagetop.cod-page-top>
+
+    <x-pagetop.cod-page-top pageHeader="Carryover page">
         {{-- alert --}}
         @if (session()->has('error'))
             <x-alerts.alert-bordered-danger>
@@ -12,7 +13,7 @@
             <div class="items-center hidden mb-3 sm:flex sm:divide-x sm:divide-gray-100 sm:mb-0 dark:divide-gray-700">
                 <x-pagination-per-page />
 
-                <x-icons.bulk-delete />
+                {{-- <x-icons.bulk-delete /> --}}
             </div>
 
             <div class="flex items-center ml-auto space-x-2 sm:space-x-3">

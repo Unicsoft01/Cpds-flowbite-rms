@@ -21,3 +21,14 @@ php artisan make:model Admin -m -f
 ```php
 php artisan db:seed --class=RolesAndPermissionsSeeder
 ```
+Recommended Assets to Cache
+
+php artisan config:cache      
+php artisan route:cache     
+php artisan view:cache      
+php artisan optimize 
+
+php artisan config:clear      
+php artisan route:clear     
+php artisan view:clear      
+php artisan optimize:clea

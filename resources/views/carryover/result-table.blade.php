@@ -45,10 +45,10 @@
                         <th class="font-bold" width="3%">TCR</th>
                         <th class="font-bold" width="3%">TCE</th>
                         <th class="font-bold" width="3%">TGP</th>
-                        <th class="font-bold" width="3%">GPA</th>
+                        {{-- <th class="font-bold" width="3%">GPA</th> --}}
                         {{-- <th width="12%" colspan="4">SUMMARY</th> --}}
                         <th class="font-bold" rowspan="2"
-                            style="overflow: hidden;word-wrap: break-word;font-size:10px;" class="pos"
+                            style="overflow: hidden;word-wrap: break-word;font-size:12px;" class="pos"
                             width="7%">REMARKS</th>
 
                     </tr>
@@ -59,8 +59,8 @@
 
                     @forelse ($students as $key => $student)
                         @if ($student->courseRegistrations)
-                            <tr class="uppercase">
-                                <th>{{ $loop->iteration }}</th>
+                            <tr class="uppercase text-sm">
+                                <td class="text-[12px]">{{ $key + 1 }}</td>
                                 @if ($showNames)
                                     <th class="py-2" style="overflow: hidden">
                                         {{ $student->surname }}
@@ -84,19 +84,20 @@
                                     @if (
                                         !empty($score) &&
                                             ($score->grade_point < 1 || $score->grade === 'F' || $score->is_carryover || is_null($score->score)))
-                                        <th class="leading-wider text-md">
-                                            <span class="smallSubj">
+                                        <th class="leading-wider text-mds py-4">
+                                            <span class="text-[12px] font-bold">
                                                 {{ $course->course_code ?? '' }}
                                             </span>
                                             <br>
-                                            <span class="smallSubj">
+                                            <span class="text-[14px] font-normal">
                                                 {{ $course->unit ?? 'N/A' }}
                                             </span>
+                                            <div class="mt-1">&nbsp;</div>
                                             <br>
-                                            <span class="aggr_unit">
+                                            <span class="aggr_unitd text-[13px] font-bold py-2">
                                                 {{ $score->score ?? '' }}{{ $score->grade ?? '' }}
                                                 <br>
-                                                <span class="" style="font-size: 9px;">
+                                                <span class=" font-bold">
                                                     {{ $score->grade_point ?? '' }}
                                                 </span>
                                             </span>
@@ -112,7 +113,7 @@
                                 <th> {{ $this->calculateTCR($student->courseRegistrations) }} </th>
                                 <th> {{ $this->calculateTCE($student->courseRegistrations) }} </th>
                                 <th> {{ $this->calculateTGP($student->courseRegistrations) }} </th>
-                                <th> {{ $this->calculateGPA($student->courseRegistrations) }} </th>
+                                {{-- <th> {{ $this->calculateGPA($student->courseRegistrations) }} </th> --}}
 
                                 @php
                                     $lv = \App\Models\Level::find($level_id);
@@ -133,7 +134,7 @@
                                 @endphp
 
                                 <th style="overflow: hidden;word-wrap: break-word;width:7%">
-                                    <ttr><span style="font-size:10px;" class="uppercase ">{{ $remark }}</span>
+                                    <ttr><span style="font-size:12px;" class="uppercase ">{{ $remark }}</span>
                                     </ttr>
                                 </th>
                             </tr>
@@ -150,22 +151,9 @@
 
                 </tbody>
             </table>
-            <div>
-                <p style="font-size:20px"><strong> Page {{ $pageIndex + 1 }} of
-                        {{ $studentsChunked->count() }}</strong>
-                </p>
 
+            <x-result.official-section :$studentsChunked :$pageIndex :$officials />
 
-                <div class="officials">
-                    <div style="width:400px;float:left;text-transform:uppercase;margin-top:5%;font-size:13px">
-                        ..............................................<br>{{ $officials->exam_officer ?? null }}<br>Coordinator
-                    </div>
-                    <div style="width:400px;float:right;text-transform:uppercase;margin-top:5%;font-size:13px">
-                        ................................................<br>{{ $officials->hod ?? null }}<br>Director
-
-                    </div>
-                </div>
-            </div>
         </div>
     @endforeach
 </div>

@@ -1,22 +1,16 @@
 <div>
     <div class="grid grid-cols-1 px-4 pt-6 xl:grid-cols-3 xl:gap-4 dark:bg-gray-900 mb-2">
 
+        @if (session()->has('error'))
+            <x-alerts.alert-bordered-danger>
+                {{ session('error') }}
+            </x-alerts.alert-bordered-danger>
+        @endif
+
         <div class="mb-4 col-span-full xl:mb-2">
 
-            @if (session('error'))
-                <x-alerts.alert-bordered-danger>
-                    {{ session('error') }}
-                </x-alerts.alert-bordered-danger>
-            @endif
-
-            @if (session('success'))
-                <x-alerts.alert-bordered-success>
-                    {{ session('success') }}
-                </x-alerts.alert-bordered-success>
-            @endif
-
             <h1 class="text-md font-semibold text-gray-900 sm:text-2xl dark:text-white capitalize" style="">
-                New Course Registeration
+                New Carry-over Course Reg
             </h1>
         </div>
 
@@ -34,8 +28,7 @@
         </x-alerts.alert-bordered-danger>
     @endif
     <div class="grid grid-cols-1 px-4 xl:grid-cols-1 xl:gap-4">
-        <form action="{{ route('course-reg-file.upload') }}" method="POST" enctype="multipart/form-data" novalidate>
-            @csrf
+        <form wire:submit="uploadFile" novalidate>
             {{-- sort --}}
             <div
                 class="p-4 mb-4 bg-white border border-gray-200 rounded-lg shadow-sm 2xl:col-span-2 dark:border-gray-700 sm:p-6 dark:bg-gray-800">
@@ -59,7 +52,7 @@
                             @forelse ($courses as $course)
                                 <li>
                                     <div class="flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
-                                        <input wire:model="checked" name="checked[]" value="{{ $course->course_id }}"
+                                        <input wire:model="checked" value="{{ $course->course_id }}"
                                             id="{{ $course->course_id }}" aria-describedby="{{ $course->course_id }}"
                                             type="checkbox"
                                             class="w-4 h-4 border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:focus:ring-primary-600 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600">
@@ -83,7 +76,7 @@
             </div>
 
             <x-importer.import-section
-                message="Always use the template file to organize courses to be uploaded for a single,department,level and semester" />
+                message="Always use the template file to organize List to be imported into the Carry over table!!!" />
 
         </form>
 

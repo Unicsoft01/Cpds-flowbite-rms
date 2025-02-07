@@ -4,6 +4,7 @@ namespace App\Livewire\Students;
 
 use App\Exports\StudentsExport;
 use App\Livewire\Forms\DeleteRecords;
+use App\Models\AcademicSessions;
 use App\Models\Students;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -37,6 +38,10 @@ class StudentsIndex extends Component
     #[Url]
     #[Computed()]
     public $dept_id = null;
+
+    #[Url]
+    #[Computed()]
+    public $set = null;
 
     public function setSortBy($col)
     {
@@ -72,9 +77,10 @@ class StudentsIndex extends Component
         } else {
             $deptIds = Dept::where('user_id', Auth::id())->pluck('dept_id');
         }
+        $sets = AcademicSessions::pluck('session_id');
 
         // Start building the query
-        $query = Students::query()->with(['department']);
+        $query = Students::query()->with(['department','Academicset:session_id,session']);
 
         // Apply the department filter
         if ($this->dept_id) {
@@ -82,6 +88,13 @@ class StudentsIndex extends Component
         } else {
             $query->whereIn('dept_id', $deptIds);
         }
+
+        if ($this->set) {
+            $query->where('set', $this->set);
+        } else {
+            $query->whereIn('set', $sets);
+        }
+
 
         return $query->searchStudent(trim($this->search))
             ->orderBy($this->orderBy, $this->sortDir)

@@ -19,7 +19,7 @@ class StudentsImportView extends Component
     public UpdateRecords $updatePrompt;
 
 
-    #[Validate('required|mimes:xlsx,csv|max:2048', as: 'Student file')]
+    // #[Validate('required|mimes:xlsx,csv|max:2048', as: 'Student file')]
     public $importFile;
     #[Validate('required|integer|exists:depts,dept_id', as: 'Department')]
     public $dept_id;
@@ -30,54 +30,54 @@ class StudentsImportView extends Component
 
     public $errorss = [];
 
-    public function updatedimportFile()
-    {
-        $this->validate([
-            'importFile' => 'required|mimes:xlsx,csv|max:2048', // Only Excel/CSV files, max 2MB
-        ]);
-    }
+    // public function updatedimportFile()
+    // {
+    //     $this->validate([
+    //         'importFile' => 'required|mimes:xlsx,csv|max:2048', // Only Excel/CSV files, max 2MB
+    //     ]);
+    // }
 
     public function render()
     {
         return view('students.students-import-view');
     }
 
-    public function uploadFile()
-    {
-        $this->validate([
-            'importFile' => 'required|mimes:xlsx,csv|max:2048',
-            'dept_id' => 'required|integer|exists:depts,dept_id',
-            'faculty_id' => 'required|integer|exists:faculties,faculty_id',
-            'set' => 'required|integer|exists:academic_sessions,session_id',
-        ]);
-        // session()->flash('error', 'lorem errors');
-        try {
-            $name = $this->importFile->getRealPath();
+    // public function uploadFile()
+    // {
+    //     $this->validate([
+    //         'importFile' => 'required|mimes:xlsx,csv|max:2048',
+    //         'dept_id' => 'required|integer|exists:depts,dept_id',
+    //         'faculty_id' => 'required|integer|exists:faculties,faculty_id',
+    //         'set' => 'required|integer|exists:academic_sessions,session_id',
+    //     ]);
+    //     // session()->flash('error', 'lorem errors');
+    //     try {
+    //         $name = $this->importFile->getRealPath();
 
-            Excel::import(new StudentsImport($this->dept_id, $this->set, $this->faculty_id), $name);
+    //         Excel::import(new StudentsImport($this->dept_id, $this->set, $this->faculty_id), $name);
 
-            $this->dispatch(
-                'swal',
-                $this->updatePrompt->Swal()
-            );
+    //         $this->dispatch(
+    //             'swal',
+    //             $this->updatePrompt->Swal()
+    //         );
 
-            $this->importFile = null; // Reset file input
-        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
-            $failures = $e->failures();
-            $this->errorss = [];
-            foreach ($failures as $failure) {
-                $this->errorss[] = [
-                    'row' => $failure->row(),
-                    'attribute' => $failure->attribute(),
-                    'error' => $failure->errors()[0],
-                ];
-                session()->flash('errorss', $this->errorss);
-            }
-        } catch (\Exception $e) {
-            $this->errorss = [['row' => 'N/A', 'attribute' => 'File', 'error' => $e->getMessage()]];
-            session()->flash('errorss', $this->errorss);
-        }
-    }
+    //         $this->importFile = null; // Reset file input
+    //     } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+    //         $failures = $e->failures();
+    //         $this->errorss = [];
+    //         foreach ($failures as $failure) {
+    //             $this->errorss[] = [
+    //                 'row' => $failure->row(),
+    //                 'attribute' => $failure->attribute(),
+    //                 'error' => $failure->errors()[0],
+    //             ];
+    //             session()->flash('errorss', $this->errorss);
+    //         }
+    //     } catch (\Exception $e) {
+    //         $this->errorss = [['row' => 'N/A', 'attribute' => 'File', 'error' => $e->getMessage()]];
+    //         session()->flash('errorss', $this->errorss);
+    //     }
+    // }
 
     public function downloadSample(): BinaryFileResponse
     {

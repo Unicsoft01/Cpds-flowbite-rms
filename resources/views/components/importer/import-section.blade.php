@@ -10,11 +10,11 @@
         <div class="grid md:grid-cols-3 gap-2 mb-4">
             <div>
                 <x-input-label for="importFile" value="File upload" />
-                <input wire:model="importFile"
+                <input name="importFile"
                     class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
                     aria-describedby="file_input_help" id="file_input" type="file">
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">XLSX,CSV (MAX.
-                    2MB).</p>
+                    1MB).</p>
                 <x-input-error :messages="$errors->get('importFile')" class="mt-2" />
 
             </div>
@@ -42,9 +42,9 @@
         class="p-4 mb-4 bg-white border border-gray-200 rounded-lg shadow-sm 2xl:col-span-2 dark:border-gray-700 sm:p-6 dark:bg-gray-800">
         <div class="flex justify-start col-span-6">
             <div wire:loading wire:target="importFile" class=" progress">
-                <div class="progress-bar progress-bar-striped progress-bar-animated text-sm font-semibold text-gray-900 dark:text-white capitalize"
+                <div class="progress-bar progress-bar-striped progress-bar-animated text-sm font-semibold text-red-700 dark:text-red-700 capitalize"
                     role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
-                    Preparing for Upload...
+                    Preparing for Upload, Please wait...
                 </div>
             </div>
         </div>

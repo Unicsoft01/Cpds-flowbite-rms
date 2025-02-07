@@ -51,6 +51,7 @@
 
             <div class="grid md:grid-cols-4 gap-2 mb-0">
                 <x-dropdowns.dept-id title="Filter by Department" />
+                <x-dropdowns.set title="Filter by Set" />
 
             </div>
 
@@ -117,6 +118,11 @@
 
                                 <th scope="col"
                                     class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">
+                                    Set
+                                </th>
+
+                                <th scope="col"
+                                    class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">
                                     Contact No.
                                 </th>
                                 <th scope="col"
@@ -168,6 +174,13 @@
                                         class="p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white">
                                         <div class="flex items-center uppercase">
                                             {{ Str::of($student->department->department ?? 'Unknown')->headline }}
+                                        </div>
+                                    </td>
+
+                                    <td
+                                        class="p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white">
+                                        <div class="flex items-center uppercase">
+                                            {{ $student->Academicset->session }}/{{ $student->Academicset->session+1 }}
                                         </div>
                                     </td>
 

@@ -20,6 +20,7 @@ return new class extends Migration
             $table->unsignedBigInteger('course_id')->index();
             $table->unsignedBigInteger('session_id')->index();
             $table->unsignedBigInteger('level_id')->index();
+            $table->unsignedBigInteger('dept_id')->index();
 
             $table->string('registered_by')->default('Student');
 
@@ -69,6 +70,13 @@ return new class extends Migration
             $table->foreign('level_id')
                 ->references('level_id')
                 ->on('levels')
+                ->onDelete('cascade');
+        });
+
+        Schema::table('course_registerations', function ($table) {
+            $table->foreign('dept_id')
+                ->references('dept_id')
+                ->on('depts')
                 ->onDelete('cascade');
         });
 

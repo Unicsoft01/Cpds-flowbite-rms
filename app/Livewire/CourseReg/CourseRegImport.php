@@ -13,6 +13,7 @@ use App\Traits\FilteredUserCourses;
 use App\Traits\SharedMethods;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Computed;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -26,8 +27,8 @@ class CourseRegImport extends Component
 
     public UpdateRecords $updatePrompt;
 
-    #[Validate('required|mimes:xlsx,csv|max:2048', as: 'Courses reg. file')]
-    public $importFile;
+    // #[Validate('required|mimes:xlsx,csv|max:2048', as: 'Courses reg. file')]
+    // public $importFile;
     #[Validate('required|integer|exists:depts,dept_id', as: 'Department')]
     public $dept_id;
     #[Validate('required', as: 'Class')]
@@ -41,10 +42,10 @@ class CourseRegImport extends Component
 
     public $checked = [];
 
-    public function updated()
-    {
-        $this->MakeClass();
-    }
+    // public function updated()
+    // {
+    //     $this->MakeClass();
+    // }
 
     public function updatedLevel()
     {
@@ -60,70 +61,87 @@ class CourseRegImport extends Component
 
     // #[Computed()]
 
-    public function uploadFile()
-    {
+    // public function uploadFile()
+    // {
 
-        $this->level_id = $this->determineClass($this->level)['level'];
-        $this->semester_id = $this->determineClass($this->level)['sem'];
-        // $this->validate();
+    //     $this->level_id = $this->determineClass($this->level)['level'];
+    //     $this->semester_id = $this->determineClass($this->level)['sem'];
+    //     // $this->validate();
 
-        // $this->validate([
-        //     'level' => 'required',
-        //     'importFile' => 'required|mimes:xlsx,csv|max:2048',
-        //     'dept_id' => 'required|integer|exists:depts,dept_id',
-        //     'level_id' => 'required|integer|exists:levels,level_id',
-        //     'semester_id' => 'required|integer|exists:semesters,semester_id',
-        // ]);
-        // $courses = Courses::whereIn('course_id', $this->checked)->get(['course_id']);
-        // dd($courses->course_id);
+    //     $this->validate([
+    //         'level' => 'required',
+    //         'importFile' => 'required|mimes:xlsx,csv|max:2048',
+    //         'dept_id' => 'required|integer|exists:depts,dept_id',
+    //         'level_id' => 'required|integer|exists:levels,level_id',
+    //         'semester_id' => 'required|integer|exists:semesters,semester_id',
+    //     ]);
+    //     // $courses = Courses::whereIn('course_id', $this->checked)->get(['course_id']);
+    //     // dd($courses->course_id);
 
-        // session()->flash('error', 'lorem errors');
-        try {
-            $name = $this->importFile->getRealPath();
+    //     // session()->flash('error', 'lorem errors');
+    //     try {
+    //         // $name = $this->importFile->getRealPath();
 
-            // ($session_id, $level_id, $course_id, $semester_id, $user_id)
-            Excel::import(new CourseRegisterationsImport($this->session_id, $this->level_id, $this->checked, $this->semester_id,  Auth::id()), $name);
+    //         // // ($session_id, $level_id, $course_id, $semester_id, $user_id)
+    //         // Excel::import(new CourseRegisterationsImport($this->dept_id, $this->session_id, $this->level_id, $this->checked, $this->semester_id,  Auth::id()), $name);
 
-            $this->dispatch(
-                'swal',
-                $this->updatePrompt->Swal()
-            );
+    //         $path = $this->importFile->store('temp');  // Store in storage/app/temp
 
-            $this->importFile = null; // Reset file input
-        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
-            $failures = $e->failures();
-            $this->errorss = [];
-            foreach ($failures as $failure) {
-                $this->errorss[] = [
-                    'row' => $failure->row(),
-                    'attribute' => $failure->attribute(),
-                    'error' => $failure->errors()[0],
-                ];
-                session()->flash('errorss', $this->errorss);
-            }
-        } catch (\Exception $e) {
-            $this->errorss = [['row' => 'N/A', 'attribute' => 'File', 'error' => $e->getMessage()]];
-            session()->flash('errorss', $this->errorss);
-        }
-    }
+    //         Excel::import(
+    //             new CourseRegisterationsImport(
+    //                 $this->dept_id,
+    //                 $this->session_id,
+    //                 $this->level_id,
+    //                 $this->checked,
+    //                 $this->semester_id,
+    //                 Auth::id()
+    //             ),
+    //             storage_path('app/' . $path)
+    //         );
+    //         Storage::delete($path);
 
-    public function determineClass($levelSemester)
-    {
-        if ($this->level == 1) {
-            $this->level_id = 1;
-            $this->semester_id = 1;
-        } elseif ($this->level == 2) {
-            $this->level_id = 1;
-            $this->semester_id = 2;
-        } elseif ($this->level == 3) {
-            $this->level_id = 2;
-            $this->semester_id = 1;
-        } elseif ($this->level == 4) {
-            $this->level_id = 2;
-            $this->semester_id = 2;
-        }
-        return ['level' => $this->level_id, 'sem' => $this->semester_id];
-    }
+    //         $this->checked = [];
+
+    //         $this->dispatch(
+    //             'swal',
+    //             $this->updatePrompt->Swal()
+    //         );
+
+    //         $this->importFile = null; // Reset file input
+    //     } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+    //         $failures = $e->failures();
+    //         $this->errorss = [];
+    //         foreach ($failures as $failure) {
+    //             $this->errorss[] = [
+    //                 'row' => $failure->row(),
+    //                 'attribute' => $failure->attribute(),
+    //                 'error' => $failure->errors()[0],
+    //             ];
+    //             session()->flash('errorss', $this->errorss);
+    //         }
+    //     } catch (\Exception $e) {
+    //         $this->errorss = [['row' => 'N/A', 'attribute' => 'File', 'error' => $e->getMessage()]];
+    //         session()->flash('errorss', $this->errorss);
+    //     }
+    // }
+
+    // public function determineClass($levelSemester)
+    // {
+    //     if ($this->level == 1) {
+    //         $this->level_id = 1;
+    //         $this->semester_id = 1;
+    //     } elseif ($this->level == 2) {
+    //         $this->level_id = 1;
+    //         $this->semester_id = 2;
+    //     } elseif ($this->level == 3) {
+    //         $this->level_id = 2;
+    //         $this->semester_id = 1;
+    //     } elseif ($this->level == 4) {
+    //         $this->level_id = 2;
+    //         $this->semester_id = 2;
+    //     }
+    //     return ['level' => $this->level_id, 'sem' => $this->semester_id];
+    // }
 
     public function downloadSample(): BinaryFileResponse
     {

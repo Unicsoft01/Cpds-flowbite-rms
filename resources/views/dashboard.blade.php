@@ -1,11 +1,12 @@
 <div>
-    {{-- <x-primary-button>Lorem, ipsum dolor.</x-primary-button> --}}
 
     <div class="mt-6">
         <div class="grid w-full mx-auto sm:px-6">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-md dark:shadow-sm  sm:rounded-lg">
                 <div class="p-8 text-gray-900  dark:text-gray-100">
-                    {{ __("You're logged in!") }}
+                    <h2> Hello dear, {{ Auth::User()->name }}! We are happy to release CPDS PAAU<sup
+                            class="bg-green-500 rounded rounded-lg px-1 border border-green:700">Beta</sup> version. Help
+                        send feedbacks, our target is to reach V1.0 soonest!!!</h2>
                 </div>
             </div>
         </div>
@@ -95,7 +96,7 @@
         <div class="grid grid-cols-1 my-4 xl:grid-cols-2 xl:gap-4">
 
         </div>
-        <div
+        {{-- <div
             class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:border-gray-700 sm:p-6 dark:bg-gray-800">
             <!-- Card header -->
             <div class="items-center justify-between lg:flex">
@@ -539,7 +540,7 @@
                     </a>
                 </div>
             </div>
-        </div>
+        </div> --}}
     </div>
 
 </div>

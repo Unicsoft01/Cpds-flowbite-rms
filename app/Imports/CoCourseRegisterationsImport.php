@@ -11,7 +11,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Concerns\WithValidation;
 
-class CourseRegisterationsImport implements ToModel, WithHeadingRow, WithValidation
+class CoCourseRegisterationsImport implements ToModel, WithHeadingRow, WithValidation
 {
     protected $dept_id;
     protected $session_id;
@@ -32,7 +32,6 @@ class CourseRegisterationsImport implements ToModel, WithHeadingRow, WithValidat
         $this->level_id = $level_id;
         $this->semester_id = $semester_id;
         $this->user_id = $user_id;
-        // dd($this->courses);
     }
 
     /**
@@ -40,7 +39,8 @@ class CourseRegisterationsImport implements ToModel, WithHeadingRow, WithValidat
      *
      * @return \Illuminate\Database\Eloquent\Model|null
      */
-    public function BETAmodel(array $row)
+
+    public function model(array $row)
     {
         $tus = Courses::whereIn('course_id', $this->course_id)->get(['course_id']);
 
@@ -59,6 +59,7 @@ class CourseRegisterationsImport implements ToModel, WithHeadingRow, WithValidat
                     'session_id'    => $this->session_id,
                     'level_id'      => $this->level_id,
                     'registered_by' => 'Admin',
+                    'is_carryover' => 1,
                     'user_id'       => $this->user_id,
                 ]);
             }
@@ -66,31 +67,6 @@ class CourseRegisterationsImport implements ToModel, WithHeadingRow, WithValidat
 
         // If any registrations were collected, return them
         return $registrations;
-    }
-
-    public function model(array $row)
-    {
-        $tus = Courses::whereIn('course_id', $this->course_id)->get(['course_id']);
-        $student = $this->students->where('regno', $row['regno'])->first();
-
-        if (!$student) {
-            return; // Skip if student doesn't exist
-        }
-
-        foreach ($tus as $course) {
-            CourseRegisterations::updateOrCreate(
-                [   // Unique constraints for identifying existing records
-                    'student_id' => $student->student_id,
-                    'course_id'  => $course->course_id,
-                    'session_id' => $this->session_id,
-                    'semester_id' => $this->semester_id,
-                    'level_id'   => $this->level_id,
-                    'dept_id'       => $this->dept_id,
-                    'registered_by' => 'Admin',
-                    'user_id'       => $this->user_id,
-                ]
-            );
-        }
     }
 
 

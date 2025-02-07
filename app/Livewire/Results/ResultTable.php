@@ -3,6 +3,7 @@
 namespace App\Livewire\Results;
 
 use App\Models\AcademicSessions;
+use App\Models\CourseRegisterations;
 use App\Models\Courses;
 use App\Models\Dept;
 use App\Models\Level;
@@ -27,10 +28,10 @@ class ResultTable extends Component
 
     use ResultMethods;
 
-    public $students, $session, $semester, $level, $dept, $coreCourse, $eleCount, $officials, $level_id, $semester_id;
+    public $Cregs, $sessionId, $students, $session, $semester, $level, $dept, $coreCourse, $eleCount, $officials, $level_id, $semester_id;
     public $showNames = true;
 
-    public $recordsPerPage = 10; 
+    public $recordsPerPage = 8;
     public $studentsChunked = [];
 
 
@@ -81,11 +82,79 @@ class ResultTable extends Component
         // Split courses into core and elective
         $this->coreCourse = $Loadcourses->where('status', 'C');
         $this->eleCount = $Loadcourses->where('status', 'E');
+
+        // ready for legend and summary
+
+        $this->sessionId = AcademicSessions::where('session', $this->session)->first()->session_id;
+
+        // Fetch all registrations ONCE to optimize queries
+        $this->Cregs = CourseRegisterations::where('session_id', $this->sessionId)
+            ->where('dept_id', $dept_id)
+            ->where('semester_id', $semester_id)
+            ->where('level_id', $this->level_id)
+            ->groupBy('registration_id', 'semester_id', 'dept_id', 'level_id', 'student_id', 'course_id', 'session_id', 'registered_by', 'is_carryover', 'is_spillover', 'result_status', 'created_at', 'user_id', 'score', 'grade', 'grade_point', 'updated_at')
+            ->get();
     }
+
+    public function studentsWithCourses()
+    {
+        return $this->Cregs->groupBy('student_id')->count();
+    }
+
+    public function studentsWithScores()
+    {
+        return $this->Cregs
+            ->whereNotNull('score') // Filters only registrations with a score
+            ->groupBy('student_id') // Ensures each student is counted once
+            ->count(); // Counts unique students
+    }
+
+    public function studentsWhoPassed()
+    {
+        return $this->Cregs
+            ->groupBy('student_id') // Ensure each student is evaluated as a group
+            ->filter(
+                fn($registrations) =>
+                $registrations->every(fn($reg) => ($reg->grade_point ?? 0) >= 1) // All courses must have a grade_point >= 1
+            )
+            ->count(); // Count only students who passed all courses
+    }
+
+    // Students with Carry Over (At least one course failed)
+    public function studentsWithCarryOver()
+    {
+        return $this->Cregs
+            ->groupBy('student_id') // Group registrations by each student
+            ->filter(
+                fn($registrations) =>
+                $registrations->contains(
+                    fn($reg) => ($reg->grade_point ?? 0) < 1 || $reg->grade === 'F' || is_null($reg->score) // Carryover condition
+                )
+            )
+            ->count(); // Count only students with at least one carryover
+    }
+
+
+    // // Students Who Didn’t Register Any Course
+    public function studentsWithoutRegistrations()
+    {
+        return Students::where('dept_id', $this->dept->dept_id) // Ensure department is matched
+            // ->where('level_id', $this->level_id) // Match level
+            ->whereNotIn('student_id', function ($query) {
+                $query->select('student_id')
+                    ->from('course_registerations')
+                    ->where('semester_id', $this->semester_id)
+                    ->where('level_id', $this->level_id)
+                    ->where('session_id', $this->sessionId);
+            }) // Exclude students who have registered courses
+            ->count();
+    }
+
+
 
     public function render()
     {
-        // dd($this->dept->dept_id);
+        // dd($this->studentsWithCourses());
         return view('results.result-table');
     }
 
