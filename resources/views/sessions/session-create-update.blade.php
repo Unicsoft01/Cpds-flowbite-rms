@@ -21,7 +21,7 @@
                 <div class="grid grid-cols-1 gap-s6 mb-4">
                     <div>
                         <x-input-label for="session" value="Session" />
-                        <x-text-input wire:model.live="sess.session" id="session" type="number"
+                        <x-text-input wire:model="sess.session" id="session" type="number"
                             placeholder="Enter session E.g 2025" required />
                         <x-input-error :messages="$errors->get('sess.session')" class="mt-2" />
                     </div>

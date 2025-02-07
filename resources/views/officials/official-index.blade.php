@@ -16,13 +16,13 @@
                 <div class="grid grid-cols-2 gap-6 mb-4">
                     <div>
                         <x-input-label for="hod" value="Dean/Director" />
-                        <x-text-input wire:model.live="officials.hod" id="hod" type="text"
+                        <x-text-input wire:model="officials.hod" id="hod" type="text"
                             placeholder="Enter name of Dean/Director" required />
                         <x-input-error :messages="$errors->get('officials.hod')" class="mt-2" />
                     </div>
                     <div>
                         <x-input-label for="exam_officer" value="HOD/Coordinator/Exam Officer" />
-                        <x-text-input wire:model.live="officials.exam_officer" id="exam_officer" type="text" required
+                        <x-text-input wire:model="officials.exam_officer" id="exam_officer" type="text" required
                             placeholder="Enter name of  HOD/Coordinator/Exam officer" required />
                         <x-input-error :messages="$errors->get('officials.exam_officer')" class="mt-2" />
                     </div>
