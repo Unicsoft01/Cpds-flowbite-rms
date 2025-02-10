@@ -220,7 +220,7 @@
                         <div class="grid grid-cols-1 gap-6 mb-4">
                             <div>
                                 <x-input-label for="regno" value="Student Matriculation Number:" />
-                                <x-text-input wire:model.blur="regno" id="regno" type="text"
+                                <x-text-input wire:model="regno" id="regno" type="text"
                                     placeholder="Enter Reg. No. to proceed" required />
                                 <x-input-error :messages="$errors->get('regno')" class="mt-2" />
                             </div>

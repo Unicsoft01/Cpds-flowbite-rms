@@ -31,7 +31,7 @@ class AdminCourseRegistrationCreate extends Component
     public $session_id;
 
     #[Url()]
-    public $semester_id = 1;
+    public $semester_id;
 
     #[Url()]
     public $level_id;
@@ -82,6 +82,16 @@ class AdminCourseRegistrationCreate extends Component
     //
     public function registerCourses()
     {
+        if (!$this->session_id) {
+            session()->flash('error', 'Select a valid Academic session to continue.');
+            return;
+        }
+
+        if (!$this->level) {
+            session()->flash('error', 'Select a valid Class to continue.');
+            return;
+        }
+
         $this->NotEmpty($this->selectedCourses);
 
         if ($this->selectedCourses) {

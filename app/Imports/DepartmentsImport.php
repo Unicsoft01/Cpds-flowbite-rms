@@ -25,11 +25,15 @@ class DepartmentsImport implements ToModel, WithHeadingRow, WithValidation
      */
     public function model(array $row)
     {
-        return new Dept([
-            'department'   => $row['department'],
-            'faculty_id'      => $this->faculty_id,
-            'user_id'       => $this->user_id,
-        ]);
+        return Dept::updateOrCreate(
+            [
+                'department' => trim($row['department']), // Ensures uniqueness
+                'faculty_id' => $this->faculty_id,
+            ],
+            [
+                'user_id' => $this->user_id, // Optional field to track who created it
+            ]
+        );
     }
 
     public function rules(): array

@@ -8,6 +8,7 @@ use App\Http\Middleware\RoleMiddleware;
 use App\Livewire\Carryover\CoCourseRegImport;
 use App\Livewire\Carryover\CoIndex;
 use App\Livewire\Carryover\CoResultsIndex;
+use App\Livewire\Carryover\CoScoreImportPage;
 use App\Livewire\Carryover\CoScores;
 use App\Livewire\CourseReg\AdminCourseRegistration;
 use App\Livewire\CourseReg\AdminCourseRegistrationCreate;
@@ -106,7 +107,7 @@ Route::middleware([HtmlMinifier::class])->group(function () {
             Route::get('/co-scoresheet', CoScores::class)->name('scoresheet');
             Route::get('/co-result-index', CoResultsIndex::class)->name('result');
             Route::get('/carry-over/import', CoCourseRegImport::class)->name('import');
-            // Route::get('/carry-create', AdminCourseRegistrationCreate::class)->name('create');
+            Route::get('/co-scores/import', CoScoreImportPage::class)->name('score-import');
             // Route::get('/carry-create/{slug}', AdminCourseRegistrationCreate::class)->name('create-slug');
         });
 
@@ -141,7 +142,7 @@ Route::middleware([HtmlMinifier::class])->group(function () {
             Route::post('/upload-student-file', 'uploadStudentFile')->name('upload-student-file.upload');
             Route::post('/upload-scores-file', 'uploadScoresFile')->name('scores-file.upload');
             Route::post('/upload-department-file', 'uploadDepartmentFile')->name('department-file.upload');
-
+            Route::post('/upload-co-scores-file', 'uploadCoScoresFile')->name('co-scores-file.upload');
         });
     });
 

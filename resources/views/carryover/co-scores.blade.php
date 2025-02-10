@@ -20,7 +20,7 @@
         @endif
 
         @if (session()->has('success'))
-            <x-toast id="{{ $editingField }}">
+            <x-toast message="{{ session('success') }}" id="{{ $editingField }}">
                 <x-checked.rounded-check-success />
             </x-toast>
         @endif
@@ -29,7 +29,7 @@
             <div class="items-center hidden mb-3 sm:flex sm:divide-x sm:divide-gray-100 sm:mb-0 dark:divide-gray-700">
                 <x-pagination-per-page />
 
-                <x-icons.bulk-delete />
+                {{-- <x-icons.bulk-delete /> --}}
             </div>
 
             <div class="flex items-center ml-auto space-x-2 sm:space-x-3">
@@ -241,10 +241,10 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="9"
+                                        <td colspan="10"
                                             class="p-4 text-base text-center font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                            No records available at the moment, Be sure students registered thier
-                                            courses or you Create/Import some!!</td>
+                                            No records available at the moment, Students who fail a course or who didnt
+                                            register for a course will automatically appear here</td>
                                     </tr>
                                 @endforelse
                             </tbody>

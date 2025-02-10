@@ -149,7 +149,30 @@ class CoResultsIndex extends Component
 
     public function viewSelectionResults()
     {
-        $this->SelectionResults();
+        if (empty($this->checked)) {
+            session()->flash('error', 'Please select at least one student belonging to a department, class and set to view results.');
+            return;
+        }
+
+        if (!$this->set) {
+            session()->flash('error', 'Select a valid session to continue.');
+            return;
+        }
+
+        if (!$this->determineClass($this->level)['sem']) {
+            session()->flash('error', 'Select a valid semester to continue.');
+            return;
+        }
+
+        if (!$this->determineClass($this->level)['sem']) {
+            session()->flash('error', 'Select a valid level to continue.');
+            return;
+        }
+
+        if (!$this->dept_id) {
+            session()->flash('error', 'Select a valid department to continue.');
+            return;
+        }
 
         return redirect()->route('co-results.page', ['students' => $this->checked, 'level_id' => $this->determineClass($this->level)['level'], 'semester_id' => $this->determineClass($this->level)['sem'], 'session_id' => $this->set, 'dept_id' => $this->dept_id]);
     }

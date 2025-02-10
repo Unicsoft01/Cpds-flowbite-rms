@@ -59,6 +59,8 @@ class CoScores extends Component
         $this->fetchCourses();
 
         $this->fetchRegistrations();
+
+        $this->checked = [];
     }
 
     #[Computed()]
@@ -170,7 +172,7 @@ class CoScores extends Component
             $this->checkAndSetSpillover($courseRegistration);
 
             // Flash success message
-            session()->flash('success', 'Score updated successfully.');
+            session()->flash('success', 'Score updated successfully. Record available via CO Result page');
 
             // Refresh the scores to reflect the updated data
             $this->fetchRegistrations();
@@ -260,7 +262,7 @@ class CoScores extends Component
 
     public function OpenImportView()
     {
-        $this->redirectRoute('scores.import', navigate: true);
+        $this->redirectRoute('carryover.score-import', navigate: true);
     }
 
     public function generateFileName($level, $semester, $course, $session)

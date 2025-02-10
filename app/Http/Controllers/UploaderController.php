@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\CoScoresImport;
 use App\Imports\CourseRegisterationsImport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -56,7 +57,9 @@ class UploaderController extends Controller
                     $file
                 );
 
-                return redirect()->back()->with('success', 'File imported successfully!');
+                // return redirect()->back()->with('success', 'File imported successfully!');
+                session()->flash('success', 'File imported successfully!');
+                return back();
             } else {
                 return redirect()->back()->with('error', 'No file was uploaded.');
             }
@@ -193,6 +196,63 @@ class UploaderController extends Controller
         }
     }
 
+    public function uploadCoScoresFile(Request $request)
+    {
+        // return $request;
+        $request->validate([
+            'importFile' => 'required|mimes:xlsx,csv|max:1024',
+            'dept_id'     => 'required|integer|exists:depts,dept_id',
+            'session_id'  => 'required|integer|exists:academic_sessions,session_id',
+            'course_id'   => 'required|integer',
+        ]);
+
+
+        try {
+
+            $this->level = $request->level;
+            $this->MakeClass();
+
+            // Excel::import(new ScoresImport($this->session_id, $this->level_id, $this->course_id, $this->semester_id,  Auth::id()), $name);
+
+            if ($request->hasFile('importFile')) {
+                $file = $request->file('importFile');
+                // return $$request->checked;
+                // Import the file using the CoursesImport class
+                Excel::import(
+                    new CoScoresImport(
+                        $request->session_id,
+                        $this->level_id,
+                        $request->course_id, // Ensure it's an array
+                        $this->semester_id,
+                        Auth::id()
+                    ),
+                    $file
+                );
+                // return redirect()->back()->with('success', 'File imported successfully!');
+                session()->flash('success', 'File imported successfully!');
+                return back();
+            } else {
+                return redirect()->back()->with('error', 'No file was uploaded.');
+            }
+        } catch (ValidationException $e) {
+            // Handle Excel validation errors
+            $failures = $e->failures();
+            $errors = [];
+
+            foreach ($failures as $failure) {
+                $errors[] = [
+                    'row'       => $failure->row(),
+                    'attribute' => $failure->attribute(),
+                    'error'     => $failure->errors()[0],
+                ];
+            }
+
+            return redirect()->back()->withErrors($errors);
+        } catch (\Exception $e) {
+            // Handle general exceptions
+            return redirect()->back()->with('error', 'Upload failed: ' . $e->getMessage());
+        }
+    }
 
     public function uploadScoresFile(Request $request)
     {
@@ -252,10 +312,7 @@ class UploaderController extends Controller
     }
     public function uploadDepartmentFile(Request $request)
     {
-        // return $request->checked;
-        // Validate the incoming file
         $request->validate([
-            // 'importFile' => 'required|file|mimetypes:text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet|max:1024',
             'importFile' => 'required|mimes:xlsx,csv|max:1024',
             'faculty_id' => 'required|integer|exists:faculties,faculty_id',
 

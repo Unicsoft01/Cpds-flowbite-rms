@@ -27,7 +27,7 @@
 
                 <div class="grid md:grid-cols-3 gap-6 mb-0">
                     <div>
-                        <select wire:model.live="courseForm.dept_id" id="dept_id" required
+                        <select wire:model="courseForm.dept_id" id="dept_id" required
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 text-center">
                             <option value="">Select a Department</option>
                             @forelse (\App\Models\Dept::orderBy('department', 'asc')->where('user_id', Auth::User()->user_id)->get(['dept_id', 'department']) as $dep)
@@ -43,7 +43,7 @@
 
 
                     <div>
-                        <select wire:model.live="courseForm.level_id" id="level_id" required
+                        <select wire:model="courseForm.level_id" id="level_id" required
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 text-center">
                             <option value="">Select a Level</option>
                             @forelse (\App\Models\Level::orderBy('level', 'asc')->get(['level_id', 'level']) as $level)
@@ -58,7 +58,7 @@
                     </div>
 
                     <div>
-                        <select wire:model.live="courseForm.semester_id" id="semester_id" required
+                        <select wire:model="courseForm.semester_id" id="semester_id" required
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 text-center">
                             <option value="">Select Semester</option>
                             @forelse (\App\Models\Semester::get() as $sem)
