@@ -17,8 +17,6 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Auth;
 
-use function PHPUnit\Framework\isNull;
-
 // use Maatwebsite\Excel\Facades\Excel;
 
 #[Lazy()]
@@ -77,7 +75,6 @@ class CourseIndex extends Component
     #[Computed()]
     public function courses()
     {
-        $this->MakeClass();
 
         $deptIds = Dept::where('user_id', Auth::id())->pluck('dept_id');
 
@@ -125,18 +122,44 @@ class CourseIndex extends Component
     #[On('Confirm-Delete')]
     public function DeleteRecord($id)
     {
-        $this->deletePrompt->DeleteRecord('App\Models\Courses', $id);
+        // $this->deletePrompt->DeleteRecord('App\Models\Courses', $id);
+        try {
+            $record = Courses::find($id);
+            $record->delete();
 
-        $this->dispatch(
-            'swal',
-            $this->deletePrompt->Swal()
-        );
+            $this->dispatch(
+                'swal',
+                $this->deletePrompt->Swal()
+            );
+        } catch (\Exception $e) {
+            session()->flash('error', $e->getMessage());
+        }
     }
 
     #[On('Confirm-Export')]
     public function exportSelected()
     {
-        return (new CoursesExport($this->checked))->download($this->generateFileName($this->dept_id, $this->semester_id, $this->level_id));
+        if (empty($this->checked)) {
+            session()->flash('error', 'Please select one or multiple Courses to export');
+            return;
+        }
+
+        if (is_null($this->dept_id)) {
+            session()->flash('error', 'Please select a valid Department to export');
+            return;
+        }
+
+        if (is_null($this->level)) {
+            session()->flash('error', 'Please select a Class to export.');
+            return;
+        }
+
+        try {
+            $this->MakeClass();
+            return (new CoursesExport($this->checked))->download($this->generateFileName($this->dept_id, $this->semester_id, $this->level_id));
+        } catch (\Exception $e) {
+            session()->flash('error', $e->getMessage());
+        }
     }
 
     #[On('Confirm-Multiple-Delete')]
@@ -146,14 +169,19 @@ class CourseIndex extends Component
             session()->flash('error', 'Please select one or multiple Courses to delete');
             return;
         }
-        Courses::whereKey($this->checked)->delete();
-        $this->checked = [];
-        $this->selectAll = false;
-        // $this->selectPage = false;
-        $this->dispatch(
-            'swal',
-            $this->deletePrompt->Swal()
-        );
+
+        try {
+            Courses::whereKey($this->checked)->delete();
+            $this->checked = [];
+            $this->selectAll = false;
+
+            $this->dispatch(
+                'swal',
+                $this->deletePrompt->Swal()
+            );
+        } catch (\Exception $e) {
+            session()->flash('error', $e->getMessage());
+        }
     }
 
     public function OpenImportView()
@@ -176,10 +204,12 @@ class CourseIndex extends Component
         }
 
 
+
+
         return 'Courses_'
             . strtoupper(str_replace(' ', '_', $dept_)) . '_'
-            . strtolower(str_replace(' ', '_', $semester_)) . '_Sem_'
             . strtolower(str_replace(' ', '_', $level_)) . ''
+            . strtolower(str_replace(' ', '_', $semester_)) . '_Sem_'
             . '_' . now()->format('m_d_His')
             . '.csv';
     }

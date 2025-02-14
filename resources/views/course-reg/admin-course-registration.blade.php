@@ -2,6 +2,12 @@
 
     <x-pagetop.cod-page-top pageHeader="Student course registration">
         {{-- alert --}}
+        <x-alerts.alert-bordered-warning>
+            Delete Functionality will be removed from the course Registeration section soon. It's added here only for
+            experimental purpose. We are commmitted to keeping your file intergrity intact and We hope you
+            understand!!!.
+        </x-alerts.alert-bordered-warning>
+
         @if (session()->has('error'))
             <x-alerts.alert-bordered-danger>
                 {{ session('error') }}

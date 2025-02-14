@@ -73,7 +73,7 @@
 
                                         <div class="grid md:grid-cols-2 gap-6 mb-0">
 
-                                            <x-dropdowns.session-id />
+                                            <x-dropdowns.session-id makeLive="false" />
 
                                             <x-dropdowns.class />
 

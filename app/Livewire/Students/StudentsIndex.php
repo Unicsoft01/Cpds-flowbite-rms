@@ -80,7 +80,7 @@ class StudentsIndex extends Component
         $sets = AcademicSessions::pluck('session_id');
 
         // Start building the query
-        $query = Students::query()->with(['department','Academicset:session_id,session']);
+        $query = Students::query()->with(['department', 'Academicset:session_id,session']);
 
         // Apply the department filter
         if ($this->dept_id) {
@@ -119,12 +119,16 @@ class StudentsIndex extends Component
     #[On('Confirm-Delete')]
     public function DeleteRecord($id)
     {
-        $this->deletePrompt->DeleteRecord('App\Models\Students', $id);
+        try {
+            $this->deletePrompt->DeleteRecord('App\Models\Students', $id);
 
-        $this->dispatch(
-            'swal',
-            $this->deletePrompt->Swal()
-        );
+            $this->dispatch(
+                'swal',
+                $this->deletePrompt->Swal()
+            );
+        } catch (\Exception $e) {
+            session()->flash('error', $e->getMessage());
+        }
     }
 
     #[On('Confirm-Export')]
@@ -140,14 +144,19 @@ class StudentsIndex extends Component
             session()->flash('error', 'Please select one or multiple Students to delete');
             return;
         }
-        Students::whereKey($this->checked)->delete();
-        $this->checked = [];
-        $this->selectAll = false;
-        // $this->selectPage = false;
-        $this->dispatch(
-            'swal',
-            $this->deletePrompt->Swal()
-        );
+
+        try {
+            Students::whereKey($this->checked)->delete();
+            $this->checked = [];
+            $this->selectAll = false;
+            // $this->selectPage = false;
+            $this->dispatch(
+                'swal',
+                $this->deletePrompt->Swal()
+            );
+        } catch (\Exception $e) {
+            session()->flash('error', $e->getMessage());
+        }
     }
 
     public function OpenImportView()

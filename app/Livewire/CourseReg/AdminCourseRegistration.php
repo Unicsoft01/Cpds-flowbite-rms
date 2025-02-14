@@ -192,7 +192,32 @@ class AdminCourseRegistration extends Component
     #[On('Confirm-Export')]
     public function exportSelected()
     {
-        return (new CourseRegisterationsExport($this->checked, $this->level_id, $this->semester_id, $this->session_id, $this->course_id))->download($this->generateFileName($this->level_id, $this->semester_id, $this->course_id, $this->session_id));
+        if (empty($this->checked)) {
+            session()->flash('error', 'Please select one or multiple Courses to export');
+            return;
+        }
+
+        if (is_null($this->dept_id)) {
+            session()->flash('error', 'Please select a valid Department to export');
+            return;
+        }
+
+        if (is_null($this->level)) {
+            session()->flash('error', 'Please select a Class to export.');
+            return;
+        }
+
+        if (is_null($this->session_id)) {
+            session()->flash('error', 'Please select a Class to export.');
+            return;
+        }
+
+        try {
+            $this->MakeClass();
+            return (new CourseRegisterationsExport($this->checked, $this->level_id, $this->semester_id, $this->session_id, $this->course_id))->download($this->generateFileName($this->level_id, $this->semester_id, $this->course_id, $this->session_id));
+        } catch (\Exception $e) {
+            session()->flash('error', $e->getMessage());
+        }
     }
 
     #[On('Confirm-Multiple-Delete')]
@@ -202,15 +227,38 @@ class AdminCourseRegistration extends Component
             session()->flash('error', 'Please select one or multiple Students to delete associated Course registration for a class');
             return;
         }
-        CourseRegisterations::whereIn('student_id', $this->checked)->delete();
-        $this->checked = [];
-        $this->selectAll = false;
-        // $this->selectPage = false;
-        $this->dispatch(
-            'swal',
-            $this->deletePrompt->Swal()
-        );
+
+        try {
+
+            CourseRegisterations::whereIn('student_id', $this->checked)->delete();
+            $this->checked = [];
+            $this->selectAll = false;
+            // $this->selectPage = false;
+            $this->dispatch(
+                'swal',
+                $this->deletePrompt->Swal()
+            );
+        } catch (\Exception $e) {
+            session()->flash('error', $e->getMessage());
+        }
     }
+
+    // #[On('Confirm-Delete')]
+    // public function DeleteRecord($id)
+    // {
+    //     try {
+    //         CourseRegisterations::where('student_id', $id)->where->delete();
+    //         // $record->delete();
+
+    //         $this->dispatch(
+    //             'swal',
+    //             $this->deletePrompt->Swal()
+    //         );
+    //     } catch (\Exception $e) {
+    //         session()->flash('error', $e->getMessage());
+    //     }
+    // }
+
 
     public function OpenImportView()
     {

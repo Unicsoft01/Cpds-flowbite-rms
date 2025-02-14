@@ -15,6 +15,9 @@
             <h2 class="md:inline-blocks mt-10 md:text-3xl font-extrabold tracking-wide text-gray-900 dark:text-white">
                 Initializing, Please wait!
             </h2>
+            <span class="md:inline-blocks text-sm mt-0 tracking-normal text-gray-900 dark:text-white">
+                Taking time? check your internet!
+            </span>
         </div>
     </div>
 
