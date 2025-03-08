@@ -105,8 +105,15 @@ class ResultIndex extends Component
     public function viewSelectionResults()
     {
         $this->SelectionResults();
-        
+
         return redirect()->route('results.page', ['students' => $this->checked, 'level_id' => $this->determineClass($this->level)['level'], 'semester_id' => $this->determineClass($this->level)['sem'], 'session_id' => $this->set, 'dept_id' => $this->dept_id]);
+    }
+
+    public function viewSelectionResultsExternal()
+    {
+        $this->SelectionResults();
+
+        return redirect()->route('external-results.page', ['students' => $this->checked, 'level_id' => $this->determineClass($this->level)['level'], 'semester_id' => $this->determineClass($this->level)['sem'], 'session_id' => $this->set, 'dept_id' => $this->dept_id]);
     }
 
     public function releaseResults()

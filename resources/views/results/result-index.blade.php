@@ -70,6 +70,11 @@
                     wire:click='viewSelectionResults'>
                     View selection results ({{ count($this->checked) }})
                 </x-primary-button>
+
+                <x-primary-button class="inline-flex items-center justify-center w-1/2 px-3 py-2 "
+                    wire:click='viewSelectionResultsExternal'>
+                    View results [External] ({{ count($this->checked) }})
+                </x-primary-button>
             </div>
         </div>
         {{-- new search ad  --}}

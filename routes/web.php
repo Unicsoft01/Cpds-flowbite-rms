@@ -136,6 +136,8 @@ Route::middleware([HtmlMinifier::class])->group(function () {
         Route::get('/results/view', [ResultController::class, 'view'])->name('results.page')->lazy();
         Route::get('/co-results/view', [ResultController::class, 'co_view'])->name('co-results.page')->lazy();
 
+        Route::get('/results/view', [ResultController::class, 'viewResultFromOutSide'])->name('external-results.page')->lazy();
+
         Route::controller(UploaderController::class)->group(function () {
             Route::post('/upload-course-file', 'uploadCoursesFile')->name('course-file.upload');
             Route::post('/upload-course-reg-file', 'uploadCourseRegFile')->name('course-reg-file.upload');
