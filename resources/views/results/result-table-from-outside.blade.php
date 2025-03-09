@@ -31,10 +31,10 @@
 
             <x-result.head-section :$dept :$session :$level :$semester>
                 Examination Results
-                <div class="toggle_container">
+                {{-- <div class="toggle_container">
                     <div class="tracking-normal leading-normal font-bold text-3xl underline"> SUPPLEMENTARY RESULT(S)
                     </div>
-                </div>
+                </div> --}}
             </x-result.head-section>
 
             <table class="text-[12px] mytab" style="table-layout:fixed" width="100%" align="right">

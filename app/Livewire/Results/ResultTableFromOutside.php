@@ -7,6 +7,7 @@ use App\Models\CourseRegisterations;
 use App\Models\Courses;
 use App\Models\Dept;
 use App\Models\Level;
+use App\Models\PreviousMetrics;
 use App\Models\Semester;
 use App\Models\Signatory;
 use App\Models\Students;
@@ -217,11 +218,7 @@ class ResultTableFromOutside extends Component
     // Metrics
     public function calculatePreviousMetrics($student, $currentSession, $currentSemester, $currentLevel)
     {
-        // Initialize variables for the metrics
-        $ctcr = 0; // Total Credit Registered
-        $ctce = 0; // Total Credit Earned
-        $ctgp = 0; // Total Grade Points
-        $cgpa = 0; // Cumulative GPA
+
 
         // Define the level and semester filtering logic
         $query = DB::table('course_registerations')
@@ -264,16 +261,22 @@ class ResultTableFromOutside extends Component
             'course_registerations.score'
         )->get();
 
-        // Calculate metrics
-        $ctcr = $previousRegistrations->sum('unit'); // Total Credit Registered
-        $ctce = $previousRegistrations->filter(fn($reg) => $reg->grade_point > 0)->sum('unit'); // Total Credit Earned
-        $ctgp = $previousRegistrations->sum(fn($reg) => ($reg->grade_point ?? 0)); // * ($reg->unit ?? 0)); // Total Grade Points
-        $cgpa = $ctcr > 0 ? round($ctgp / $ctcr, 2) : 0; // Cumulative GPA
+        // // Calculate metrics
+        $new_ctcr = $previousRegistrations->sum('unit'); // Total Credit Registered
+        $new_ctce = $previousRegistrations->filter(fn($reg) => $reg->grade_point > 0)->sum('unit'); // Total Credit Earned
+        $new_ctgp = $previousRegistrations->sum(fn($reg) => ($reg->grade_point ?? 0)); // Total Grade Points
+        $new_cgpa = $new_ctcr > 0 ? round($new_ctgp / $new_ctcr, 2) : 0; // Cumulative GPA
+        $new_cgpa = $new_cgpa > 0 ? number_format($new_cgpa, 2, '.', '') : 0;
 
-        // Calculate CGPA (CTGP / CTCR)
-        $cgpa = $ctcr > 0 ? round($ctgp / $ctcr, 2) : 0;
+        // Fetch existing previous metrics for the student
+        $previousMetrics = PreviousMetrics::where('student_id', $student->student_id)->first();
 
-        $cgpa =  $cgpa > 0 ? number_format($cgpa, 2, '.', '') : 0;
+        // Initialize with stored values or default to zero
+        $ctcr = ($previousMetrics->tcr ?? 0) + $new_ctcr;
+        $ctce = ($previousMetrics->tce ?? 0) + $new_ctce;
+        $ctgp = ($previousMetrics->tgp ?? 0) + $new_ctgp;
+        $cgpa = ($previousMetrics->gpa ?? 0) + $new_cgpa;
+        $cgpa = $cgpa > 0 ? number_format($cgpa, 2, '.', '') : 0;
 
         // Return calculated metrics
         return compact('ctcr', 'ctce', 'ctgp', 'cgpa');
@@ -328,9 +331,22 @@ class ResultTableFromOutside extends Component
             ->get();
 
         // Calculate metrics
-        $ctcr = $registrations->sum('unit'); // Total Credit Registered
-        $ctce = $registrations->filter(fn($reg) => $reg->grade_point > 0)->sum('unit'); // Total Credit Earned
-        $ctgp = $registrations->sum(fn($reg) => ($reg->grade_point ?? 0)); // * ($reg->unit ?? 0)); // Total Grade Points
+
+        $new_ctcr = $registrations->sum('unit'); // Total Credit Registered
+        $new_ctce = $registrations->filter(fn($reg) => $reg->grade_point > 0)->sum('unit'); // Total Credit Earned
+        $new_ctgp = $registrations->sum(fn($reg) => ($reg->grade_point ?? 0)); // Total Grade Points
+        $new_cgpa = $new_ctcr > 0 ? round($new_ctgp / $new_ctcr, 2) : 0; // Cumulative GPA
+        $new_cgpa = $new_cgpa > 0 ? number_format($new_cgpa, 2, '.', '') : 0;
+
+        // Fetch existing previous metrics for the student
+        $previousMetrics = PreviousMetrics::where('student_id', $student->student_id)->first();
+
+        // Initialize with stored values or default to zero
+        $ctcr = ($previousMetrics->tcr ?? 0) + $new_ctcr;
+        $ctce = ($previousMetrics->tce ?? 0) + $new_ctce;
+        $ctgp = ($previousMetrics->tgp ?? 0) + $new_ctgp;
+
+
         $cgpa = $ctcr > 0 ? round($ctgp / $ctcr, 2) : 0; // Cumulative GPA
         $cgpa = $cgpa > 0 ? number_format($cgpa, 2, '.', '') : 0;
 

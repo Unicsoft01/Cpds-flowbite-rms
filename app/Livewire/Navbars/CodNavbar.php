@@ -46,4 +46,9 @@ class CodNavbar extends Component
     {
         $this->redirectRoute('spillover.result', navigate: true);
     }
+
+    public function OpenMetricsIndex()
+    {
+        $this->redirectRoute('metrics.index', navigate: true);
+    }
 }

@@ -53,6 +53,10 @@
                                 <x-icons.user-settings />
                                 Officials
                             </x-light-button>
+                            <x-light-button wire:click.prevent="OpenMetricsIndex()">
+                                <x-icons.user-settings />
+                                Import result metrics
+                            </x-light-button>
                         @endif
 
                     </div>

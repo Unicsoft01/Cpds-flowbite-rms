@@ -187,7 +187,7 @@ trait ResultMethods
         if ($level == 1) {
             return $ses;
         } else {
-            return $ses + 1;
+            return $ses; // + 1;
         }
     }
 }

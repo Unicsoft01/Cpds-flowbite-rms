@@ -25,6 +25,7 @@ use App\Livewire\Faculties\FacultyCreateUpdate;
 use App\Livewire\Faculties\FacultyIndex;
 use App\Livewire\Faculties\Import as ImportFaculties;
 use App\Livewire\Grades\GradeIndex;
+use App\Livewire\Metrics\MetricsIndex;
 use App\Livewire\Officials\OfficialIndex;
 use App\Livewire\Results\ResultIndex;
 use App\Livewire\Results\SupResultPage;
@@ -123,6 +124,11 @@ Route::middleware([HtmlMinifier::class])->group(function () {
         Route::prefix('scores')->name('scores.')->group(function () {
             Route::get('/index', ScoresheetIndex::class)->name('index');
             Route::get('/import', ScoresImportPage::class)->name('import');
+        });
+        
+        Route::prefix('metrics')->name('metrics.')->group(function () {
+            Route::get('/index', MetricsIndex::class)->name('index');
+            // Route::get('/import', ScoresImportPage::class)->name('import');
         });
 
         Route::prefix('users')->name('users.')->group(function () {
