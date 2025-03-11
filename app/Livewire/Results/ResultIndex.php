@@ -116,6 +116,13 @@ class ResultIndex extends Component
         return redirect()->route('external-results.page', ['students' => $this->checked, 'level_id' => $this->determineClass($this->level)['level'], 'semester_id' => $this->determineClass($this->level)['sem'], 'session_id' => $this->set, 'dept_id' => $this->dept_id]);
     }
 
+    public function viewSelectionResultsSummary()
+    {
+        $this->SelectionResults();
+
+        return redirect()->route('results-summary.page', ['students' => $this->checked, 'level_id' => $this->determineClass($this->level)['level'], 'semester_id' => $this->determineClass($this->level)['sem'], 'session_id' => $this->set, 'dept_id' => $this->dept_id]);
+    }
+
     public function releaseResults()
     {
         $this->released();

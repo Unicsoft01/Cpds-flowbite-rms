@@ -28,6 +28,7 @@ use App\Livewire\Grades\GradeIndex;
 use App\Livewire\Metrics\MetricsIndex;
 use App\Livewire\Officials\OfficialIndex;
 use App\Livewire\Results\ResultIndex;
+use App\Livewire\Results\SetSummaryTable as ResultsSetSummaryTable;
 use App\Livewire\Results\SupResultPage;
 use App\Livewire\SchoolInfo\Index;
 use App\Livewire\Scores\ScoresheetIndex;
@@ -138,11 +139,13 @@ Route::middleware([HtmlMinifier::class])->group(function () {
 
         Route::get('/result/open', SupResultPage::class)->name('results.view');
         Route::get('/result/index', ResultIndex::class)->name('results.index');
+        // Route::get('/result/set-summary', ResultsSetSummaryTable::class)->name('results.set-summary');
 
         Route::get('/results/view', [ResultController::class, 'view'])->name('results.page')->lazy();
         Route::get('/co-results/view', [ResultController::class, 'co_view'])->name('co-results.page')->lazy();
 
         Route::get('/results/view', [ResultController::class, 'viewResultFromOutSide'])->name('external-results.page')->lazy();
+        Route::get('/results/view-summary', [ResultController::class, 'ViewSetSummary'])->name('results-summary.page')->lazy();
 
         Route::controller(UploaderController::class)->group(function () {
             Route::post('/upload-course-file', 'uploadCoursesFile')->name('course-file.upload');
