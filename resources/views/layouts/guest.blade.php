@@ -7,6 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ config('app.name', 'Laravel') }}</title>
+    <link rel="shortcut icon" href="{{ url('/') }}/images/logo.png" type="image/x-icon">
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -21,7 +22,7 @@
         <div class="flex flex-col items-center justify-center px-6 pt-8 mx-auto md:h-screen pt:mt-0 dark:bg-gray-900">
             <a href="{{ route('login') }}"
                 class="flex items-center justify-center mb-8 text-2xl font-semibold lg:mb-10 dark:text-white">
-                <img src="{{ url('/') }}/images/logo.svg" class="mr-4 h-11" alt="FlowBite Logo">
+                <img src="{{ url('/') }}/images/logo.png" class="mr-4 h-11" alt="FlowBite Logo">
                 <span>CPDS-PAAU-Online</span>
             </a>
             <!-- Card -->
