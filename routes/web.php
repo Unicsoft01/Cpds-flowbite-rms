@@ -37,6 +37,7 @@ use App\Livewire\Sessions\SessionIndex;
 use App\Livewire\Spillover\SpillIndex;
 use App\Livewire\Spillover\SpillScores;
 use App\Livewire\Students\Dashboard as StudentDashboard;
+use App\Livewire\Students\EditStudentRecords;
 use App\Livewire\Students\StudentCourseRegistration;
 use App\Livewire\Students\StudentCourseRegistrationCreate;
 use App\Livewire\Students\StudentsCreateUpdate;
@@ -93,6 +94,7 @@ Route::middleware([HtmlMinifier::class])->group(function () {
             Route::get('/index', StudentsIndex::class)->name('index');
             Route::get('/import', StudentsImportView::class)->name('import');
             Route::get('/create', StudentsCreateUpdate::class)->name('create');
+            Route::get('/edit-student/{id}', EditStudentRecords::class)->name('edit');
         });
 
         Route::prefix('admin')->name('course-reg.')->group(function () {

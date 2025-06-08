@@ -194,7 +194,7 @@
                                     <td class="p-4 space-x-2 whitespace-nowrap">
                                         <x-primary-button
                                             class="inline-flex items-center justify-center w-1/2 px-3 py-2 "
-                                            wire:click="$dispatch('edit-course', {id: {{ $student->student_id }}})"
+                                            wire:click="$dispatch('edit-student', {id: {{ $student->student_id }}})"
                                             title="Edit {{ $student->name }}">
                                             <x-icons.edit-icon />
                                             Edit

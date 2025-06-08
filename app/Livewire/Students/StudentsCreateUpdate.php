@@ -101,7 +101,6 @@ class StudentsCreateUpdate extends Component
         );
 
         $this->redirectRoute('students.index', navigate: true);
-        
     }
 
     public function updatedFacultyId()
