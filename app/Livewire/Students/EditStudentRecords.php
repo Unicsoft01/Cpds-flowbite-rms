@@ -17,7 +17,7 @@ class EditStudentRecords extends Component
     public string $middlename = '';
     public string $firstname = '';
     public string $regno = '';
-    // public string $email = '';
+    public $student_id;
     // public string $phone = '';
     public $session_id;
     public $faculty_id;
@@ -31,6 +31,7 @@ class EditStudentRecords extends Component
     public function mount($id = null)
     {
         $stud = Students::findOrFail($id);
+         $this->student_id = $stud->student_id; // store ID
         $this->SetStudent($stud);
 
         $this->faculties = Faculties::orderBy('faculty', 'asc')->get(['faculty_id', 'faculty']);
@@ -79,13 +80,13 @@ class EditStudentRecords extends Component
             'surname'    => ['required', 'string', 'max:50'],
             'firstname'  => ['nullable', 'string', 'max:50'],
             'middlename' => ['nullable', 'string', 'max:50'],
-            'regno'      => ['required', 'string', 'max:50'],
+            'regno'      => ['required'],
             'dept_id'    => ['required', 'exists:depts,dept_id'],
             'faculty_id' => ['required', 'exists:faculties,faculty_id'],
             'session_id' => ['required', 'exists:academic_sessions,session_id'],
         ]);
 
-        $student = Students::where('regno', $this->regno)->first();
+        $student = Students::find($this->student_id);
 
         if (!$student) {
             session()->flash('error', 'Student not found.');
@@ -106,6 +107,5 @@ class EditStudentRecords extends Component
             'swal',
             $this->updatePrompt->Swal()
         );
-        // session()->flash('success', 'Student details updated successfully.');
     }
 }
