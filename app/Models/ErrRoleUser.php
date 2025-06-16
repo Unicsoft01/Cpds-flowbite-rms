@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class RoleUser extends Model
+class ErrRoleUser extends Model
 {
     protected $primaryKey = 'role_user_id';
 
