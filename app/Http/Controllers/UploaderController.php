@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use App\Rules\MaxCsvRows;
 
 use Maatwebsite\Excel\Validators\ValidationException;
 
@@ -34,8 +35,14 @@ class UploaderController extends Controller
 
         $request->validate([
             'level' => 'required',
-            'importFile' => 'required|mimes:xlsx,csv|max:1024',
             'dept_id'    => 'required|integer|exists:depts,dept_id',
+            'importFile' => [
+                'required',
+                'file',
+                'mimes:xlsx,csv',
+                'max:1024',
+                new MaxCsvRows(config('imports.limits.courses')),
+            ],
         ]);
 
         try {
@@ -88,7 +95,14 @@ class UploaderController extends Controller
         // return $request->checked;
         // Validate the incoming file
         $request->validate([
-            'importFile' => 'required|file|mimetypes:text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet|max:1024',
+            // 'importFile' => 'required|file|mimetypes:text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet|max:1024',
+            'importFile' => [
+                'required',
+                'file',
+                'mimetypes:text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'max:1024',
+                new MaxCsvRows(config('imports.limits.course_reg')),
+            ],
             'dept_id'     => 'required|integer|exists:depts,dept_id',
             'session_id'  => 'required|integer|exists:academic_sessions,session_id',
             'checked'     => 'nullable|array', // Optional selected courses
@@ -142,7 +156,14 @@ class UploaderController extends Controller
     public function uploadStudentFile(Request $request)
     {
         $request->validate([
-            'importFile' => 'required|file|mimetypes:text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet|max:1024',
+            // 'importFile' => 'required|file|mimetypes:text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet|max:1024',
+            'importFile' => [
+                'required',
+                'file',
+                'mimetypes:text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'max:1024',
+                new MaxCsvRows(config('imports.limits.students')),
+            ],
             'dept_id'     => 'required|integer|exists:depts,dept_id',
             'faculty_id' => 'required|integer|exists:faculties,faculty_id',
             'set' => 'required|integer|exists:academic_sessions,session_id',
@@ -200,7 +221,14 @@ class UploaderController extends Controller
     {
         // return $request;
         $request->validate([
-            'importFile' => 'required|mimes:xlsx,csv|max:1024',
+            // 'importFile' => 'required|mimes:xlsx,csv|max:1024',
+            'importFile' => [
+                'required',
+                'file',
+                'mimes:xlsx,csv',
+                'max:1024',
+                new MaxCsvRows(config('imports.limits.scoresheet')),
+            ],
             'dept_id'     => 'required|integer|exists:depts,dept_id',
             'session_id'  => 'required|integer|exists:academic_sessions,session_id',
             'course_id'   => 'required|integer',
@@ -259,7 +287,14 @@ class UploaderController extends Controller
         // return $request->checked;
         // Validate the incoming file
         $request->validate([
-            'importFile' => 'required|file|mimetypes:text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet|max:1024',
+            // 'importFile' => 'required|file|mimetypes:text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet|max:1024',
+            'importFile' => [
+                'required',
+                'file',
+                'mimetypes:text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'max:1024',
+                new MaxCsvRows(config('imports.limits.scoresheet')),
+            ],
             'dept_id'     => 'required|integer|exists:depts,dept_id',
             'session_id'  => 'required|integer|exists:academic_sessions,session_id',
             'checked'     => 'nullable|array', // Optional selected courses
@@ -313,7 +348,14 @@ class UploaderController extends Controller
     public function uploadDepartmentFile(Request $request)
     {
         $request->validate([
-            'importFile' => 'required|mimes:xlsx,csv|max:1024',
+            // 'importFile' => 'required|mimes:xlsx,csv|max:1024',
+            'importFile' => [
+                'required',
+                'file',
+                'mimes:xlsx,csv',
+                'max:1024',
+                new MaxCsvRows(config('imports.limits.departments')),
+            ],
             'faculty_id' => 'required|integer|exists:faculties,faculty_id',
 
         ]);
