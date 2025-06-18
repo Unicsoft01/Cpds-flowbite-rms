@@ -100,16 +100,7 @@
                             </x-nav-link>
                         @endif
 
-                        <li>
-                            <a href="https://wa.me/+2349077957088"
-                                class="flex items-center p-2 text-base text-gray-900 rounded-lg hover:bg-gray-100 group dark:text-gray-200 dark:hover:bg-gray-700"
-                                wire:navigate>
-                                <x-icons.users-group-icon />
-                                <span class="ml-3" sidebar-toggle-item>
-                                    Report a problem
-                                </span>
-                            </a>
-                        </li>
+                       
                     </ul>
                 </div>
             </div>
