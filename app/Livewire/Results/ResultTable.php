@@ -62,7 +62,8 @@ class ResultTable extends Component
                     ->where('session_id', $session_id)
                     ->with('courses'); // Load course details
             },
-        ])->whereIn('student_id', (array) $student_id)->get();
+        ])->whereIn('student_id', (array) $student_id)->orderBy('regno')->get();
+
 
         $this->studentsChunked = $students->toBase()->chunk($this->recordsPerPage);
 

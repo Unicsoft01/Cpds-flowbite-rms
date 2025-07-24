@@ -4,7 +4,7 @@
 @endphp
 
 <li>
-    <a {{ $attributes->merge(['href' => '#', 'class' => $classes]) }}
+    <a {{ $attributes->merge(['href' => '#', 'class' => $classes]) }} wire:navigate
         wire:current="hover:bg-gray-300 bg-gray-200 dark:hover:bg-gray-900 dark:bg-gray-700">
         {{ $slot }}
     </a>
