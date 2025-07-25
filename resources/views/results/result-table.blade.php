@@ -32,7 +32,7 @@
             <x-result.head-section :$dept :$session :$level :$semester>
                 Examination Results
                 <div class="toggle_container">
-                    <div class="tracking-normal leading-normal font-bold text-3xl underline"> SUPPLEMENTARY RESULT(S)
+                    <div class="tracking-normal leading-normal font-bold text-3xl underline"> 
                     </div>
                 </div>
             </x-result.head-section>

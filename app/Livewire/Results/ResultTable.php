@@ -184,9 +184,11 @@ class ResultTable extends Component
         $tcr = $this->calculateTCR($courseRegistrations);
         $tgp = $this->calculateTGP($courseRegistrations);
 
-        // return $tcr > 0 ? round($tgp / $tcr, 2) : 0;
         // Calculate GPA (TGP / TCR)
         $gpa = $tcr > 0 ? round($tgp / $tcr, 2) : 0;
+
+        // Ensure GPA does not exceed 5.00
+        $gpa = min($gpa, 5.00);
 
         // Return formatted GPA if greater than 0, else return 0
         return $gpa > 0 ? number_format($gpa, 2, '.', '') : 0;
@@ -222,6 +224,8 @@ class ResultTable extends Component
 
         // Calculate CGPA (CTGP / CTCR)
         $cgpa = $ctcr > 0 ? round($ctgp / $ctcr, 2) : 0;
+
+        $cgpa = min($cgpa, 5.00);
 
         return $cgpa > 0 ? number_format($cgpa, 2, '.', '') : 0;
     }
@@ -343,6 +347,9 @@ class ResultTable extends Component
         $ctce = $registrations->filter(fn($reg) => $reg->grade_point > 0)->sum('unit'); // Total Credit Earned
         $ctgp = $registrations->sum(fn($reg) => ($reg->grade_point ?? 0)); // * ($reg->unit ?? 0)); // Total Grade Points
         $cgpa = $ctcr > 0 ? round($ctgp / $ctcr, 2) : 0; // Cumulative GPA
+
+        $cgpa = min($cgpa, 5.00);
+
         $cgpa = $cgpa > 0 ? number_format($cgpa, 2, '.', '') : 0;
 
         // Return the calculated metrics
