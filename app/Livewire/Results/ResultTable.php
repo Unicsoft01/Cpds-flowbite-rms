@@ -288,6 +288,8 @@ class ResultTable extends Component
         // Calculate CGPA (CTGP / CTCR)
         $cgpa = $ctcr > 0 ? round($ctgp / $ctcr, 2) : 0;
 
+        $cgpa = min($cgpa, 5.00);
+
         $cgpa =  $cgpa > 0 ? number_format($cgpa, 2, '.', '') : 0;
 
         // Return calculated metrics
