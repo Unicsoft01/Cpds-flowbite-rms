@@ -45,7 +45,13 @@ use App\Livewire\Students\StudentsImportView;
 use App\Livewire\Students\StudentsIndex;
 use App\Livewire\Users\UsersIndex;
 
-Route::middleware([HtmlMinifier::class])->group(function () {
+use App\Http\Middleware\OutOfService;
+
+Route::get('/out-of-service', function () {
+    return response()->view('out-of-service', [], 503);
+})->name('out-of-service');
+
+Route::middleware([OutOfService::class, HtmlMinifier::class])->group(function () {
 
     // Route::view('/', 'welcome');
     Route::get('/', function () {
