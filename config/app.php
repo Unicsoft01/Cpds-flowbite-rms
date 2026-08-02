@@ -123,4 +123,6 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'out_of_service' => env('APP_OUT_OF_SERVICE', false),
+
 ];
