@@ -46,6 +46,7 @@ use App\Livewire\Students\StudentsIndex;
 use App\Livewire\Users\UsersIndex;
 
 use App\Http\Middleware\OutOfService;
+use App\Livewire\Setsummary\SetSummaryIndex;
 
 Route::get('/out-of-service', function () {
     $isOutOfService = filter_var(
@@ -178,6 +179,11 @@ Route::middleware([OutOfService::class, HtmlMinifier::class])->group(function ()
 
         Route::get('/results/view', [ResultController::class, 'view'])->name('results.page')->lazy();
         Route::get('/co-results/view', [ResultController::class, 'co_view'])->name('co-results.page')->lazy();
+
+        // Set sum
+        Route::get('/set-summary/index', SetSummaryIndex::class)->name('set-summary.index');
+
+        Route::get('/set-summary/view-summary', [ResultController::class, 'ViewSetSummary'])->name('results-summary.page')->lazy();
 
         Route::controller(UploaderController::class)->group(function () {
             Route::post('/upload-course-file', 'uploadCoursesFile')->name('course-file.upload');

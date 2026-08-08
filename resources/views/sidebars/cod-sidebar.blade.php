@@ -58,6 +58,13 @@
                                 </span>
                             </x-nav-link>
 
+                            <x-nav-link :href="route('scores.index')">
+                                <x-icons.todo-list-icon />
+                                <span class="ml-3" sidebar-toggle-item>
+                                    Score sheets
+                                </span>
+                            </x-nav-link>
+
                             <x-nav-link :href="route('results.index')">
                                 <x-icons.todo-list-icon />
                                 <span class="ml-3" sidebar-toggle-item>
@@ -65,10 +72,10 @@
                                 </span>
                             </x-nav-link>
 
-                            <x-nav-link :href="route('scores.index')">
-                                <x-icons.todo-list-icon />
+                            <x-nav-link :href="route('set-summary.index')">
+                                <x-icons.book-open-icon />
                                 <span class="ml-3" sidebar-toggle-item>
-                                    Score sheets
+                                    Set summary
                                 </span>
                             </x-nav-link>
 
@@ -100,7 +107,7 @@
                             </x-nav-link>
                         @endif
 
-                       
+
                     </ul>
                 </div>
             </div>
