@@ -48,7 +48,42 @@ use App\Livewire\Users\UsersIndex;
 use App\Http\Middleware\OutOfService;
 
 Route::get('/out-of-service', function () {
-    return response()->view('out-of-service', [], 503);
+    $isOutOfService = filter_var(
+        config('app.out_of_service', false),
+        FILTER_VALIDATE_BOOLEAN
+    );
+
+    /*
+    |--------------------------------------------------------------------------
+    | Out-of-service mode has been disabled
+    |--------------------------------------------------------------------------
+    */
+
+    if (! $isOutOfService) {
+        if (auth('web')->check()) {
+            return redirect()->route('dashboard');
+        }
+
+        if (auth('student')->check()) {
+            return redirect()->route('students.dashboard');
+        }
+
+        return redirect()->route('login');
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Out-of-service mode is still active
+    |--------------------------------------------------------------------------
+    */
+
+    return response()
+        ->view('out-of-service', [], 503)
+        ->withHeaders([
+            'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
+            'Pragma' => 'no-cache',
+            'Expires' => '0',
+        ]);
 })->name('out-of-service');
 
 Route::middleware([OutOfService::class, HtmlMinifier::class])->group(function () {
