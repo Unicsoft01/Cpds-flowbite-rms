@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Livewire\Attributes\Lazy;
 use DB;
 
-#[Lazy()]
+// #[Lazy()]
 class ScoresImportPage extends Component
 {
     use WithFileUploads;

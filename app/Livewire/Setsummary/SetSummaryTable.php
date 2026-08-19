@@ -4,8 +4,6 @@ namespace App\Livewire\Setsummary;
 
 use Livewire\Component;
 
-namespace App\Livewire\Results;
-
 use App\Models\AcademicSessions;
 use App\Models\CourseRegisterations;
 use App\Models\Courses;
@@ -18,7 +16,6 @@ use App\Models\Students;
 use App\Traits\ResultMethods;
 use Livewire\Attributes\Computed;
 use Illuminate\Support\Facades\Auth;
-use Livewire\Component;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
@@ -104,38 +101,47 @@ class SetSummaryTable extends Component
     // summary methods
     private function getStudentMetrics($studentId, $level)
     {
-        $metrics = DB::table('course_registerations')
-            ->join('courses', 'course_registerations.course_id', '=', 'courses.course_id')
-            ->where('course_registerations.student_id', $studentId)
-            ->where('course_registerations.level_id', $level)
+        $metrics = DB::table('course_registerations as cr')
+            ->join('courses as c', 'cr.course_id', '=', 'c.course_id')
+
+            // Only this student
+            ->where('cr.student_id', $studentId)
+
+            // Used ONLY to distinguish Diploma 1 from Diploma 2
+            ->where('cr.level_id', $level)
+
+            // NO semester filter
+            // NO session filter
+
             ->selectRaw("
-                SUM(courses.unit) as tcr, 
-                SUM(CASE WHEN course_registerations.grade_point > 0 THEN courses.unit ELSE 0 END) as tce,
-                SUM(course_registerations.grade_point) as tgp
-            ")
+            COALESCE(SUM(c.unit), 0) as tcr,
+            COALESCE(
+                SUM(
+                    CASE
+                        WHEN cr.grade_point > 0
+                        THEN c.unit
+                        ELSE 0
+                    END
+                ),
+                0
+            ) as tce,
+            COALESCE(SUM(cr.grade_point), 0) as tgp
+        ")
             ->first();
-        Log::debug($metrics->tgp);
 
-        // If level is Diploma1 and no record found, use PreviousMetrics
-        if ($level == 1 && !$metrics->tcr) {
-            $prevMetrics = PreviousMetrics::where('student_id', $studentId)->first();
+        $tcr = (float) ($metrics->tcr ?? 0);
+        $tce = (float) ($metrics->tce ?? 0);
+        $tgp = (float) ($metrics->tgp ?? 0);
 
-            return [
-                'tcr' => $prevMetrics->tcr ?? 0,
-                'tce' => $prevMetrics->tce ?? 0,
-                'tgp' => $prevMetrics->tgp ?? 0,
-                'gpa' => ($prevMetrics->tcr > 0)
-                    ? number_format($prevMetrics->tgp / $prevMetrics->tcr, 2, '.', '')
-                    : '0.00'
-            ];
-        }
+        $gpa = $tcr > 0
+            ? min(round($tgp / $tcr, 2), 5.00)
+            : 0;
 
-        // Ensure default values if no records found
         return [
-            'tcr' => $metrics->tcr ?? 0,
-            'tce' => $metrics->tce ?? 0,
-            'tgp' => $metrics->tgp ?? 0,
-            'gpa' => ($metrics->tcr > 0) ? number_format($metrics->tgp / $metrics->tcr, 2) : 0.00
+            'tcr' => $tcr,
+            'tce' => $tce,
+            'tgp' => $tgp,
+            'gpa' => number_format($gpa, 2, '.', ''),
         ];
     }
 
@@ -144,29 +150,46 @@ class SetSummaryTable extends Component
      */
     private function getCumulativeMetrics($studentId)
     {
-        // Fetch cumulative metrics from course_registerations
-        $metrics = DB::table('course_registerations')
-            ->join('courses', 'course_registerations.course_id', '=', 'courses.course_id')
-            ->where('course_registerations.student_id', $studentId)
+        $metrics = DB::table('course_registerations as cr')
+            ->join('courses as c', 'cr.course_id', '=', 'c.course_id')
+
+            // Every registration belonging to this student
+            ->where('cr.student_id', $studentId)
+
+            // NO level filter
+            // NO semester filter
+            // NO session filter
+
             ->selectRaw("
-                COALESCE(SUM(courses.unit), 0) as ctcr, 
-                COALESCE(SUM(CASE WHEN course_registerations.grade_point > 0 THEN courses.unit ELSE 0 END), 0) as ctce,
-                COALESCE(SUM(course_registerations.grade_point), 0) as ctgp
-            ")
+            COALESCE(SUM(c.unit), 0) as ctcr,
+            COALESCE(
+                SUM(
+                    CASE
+                        WHEN cr.grade_point > 0
+                        THEN c.unit
+                        ELSE 0
+                    END
+                ),
+                0
+            ) as ctce,
+            COALESCE(SUM(cr.grade_point), 0) as ctgp
+        ")
             ->first();
 
-        // Fetch previous metrics from the database
-        $prevMetrics = PreviousMetrics::where('student_id', $studentId)->first();
+        $ctcr = (float) ($metrics->ctcr ?? 0);
+        $ctce = (float) ($metrics->ctce ?? 0);
+        $ctgp = (float) ($metrics->ctgp ?? 0);
 
-        // Combine the values (Add previous metrics if they exist)
-        $ctcr = ($metrics->ctcr ?? 0) + ($prevMetrics->tcr ?? 0);
-        $ctce = ($metrics->ctce ?? 0) + ($prevMetrics->tce ?? 0);
-        $ctgp = ($metrics->ctgp ?? 0) + ($prevMetrics->tgp ?? 0);
+        $cgpa = $ctcr > 0
+            ? min(round($ctgp / $ctcr, 2), 5.00)
+            : 0;
 
-        // Calculate CGPA and prevent DivisionByZeroError
-        $cgpa = ($ctcr > 0) ? number_format($ctgp / $ctcr, 2, '.', '') : '0.00';
-
-        return compact('ctcr', 'ctce', 'ctgp', 'cgpa');
+        return [
+            'ctcr' => $ctcr,
+            'ctce' => $ctce,
+            'ctgp' => $ctgp,
+            'cgpa' => number_format($cgpa, 2, '.', ''),
+        ];
     }
 
 
