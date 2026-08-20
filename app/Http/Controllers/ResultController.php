@@ -81,4 +81,28 @@ class ResultController extends Controller
 
         return view('setsummary.set-summary-page', compact(['student_id', 'session_id', 'semester_id', 'level_id', 'dept_id']));
     }
+    
+    public function ViewKingGraduatesSummary(Request $request)
+    {
+        // return $request;
+        $student_id = $request->input('students');
+        $session_id = $request->input('session_id');
+        $semester_id = $request->input('semester_id');
+        $level_id = $request->input('level_id');
+        $dept_id = $request->input('dept_id');
+
+        if (!$student_id) {
+            return redirect()->back()->with('error', 'No students selected.');
+        }
+
+        if (!$semester_id) {
+            return redirect()->back()->with('error', 'Select a valid class to continue');
+        }
+
+        if (!$level_id) {
+            return redirect()->back()->with('error', 'Select a valid class to continue');
+        }
+
+        return view('setsummary.kinggraduates-summary-page', compact(['student_id', 'session_id', 'semester_id', 'level_id', 'dept_id']));
+    }
 }

@@ -184,6 +184,8 @@ Route::middleware([OutOfService::class, HtmlMinifier::class])->group(function ()
         Route::get('/set-summary/index', SetSummaryIndex::class)->name('set-summary.index');
 
         Route::get('/set-summary/view-summary', [ResultController::class, 'ViewSetSummary'])->name('results-summary.page')->lazy();
+        
+        Route::get('/set-summary/view-king-graduates', [ResultController::class, 'ViewKingGraduatesSummary'])->name('results-king-graduates.page')->lazy();
 
         Route::controller(UploaderController::class)->group(function () {
             Route::post('/upload-course-file', 'uploadCoursesFile')->name('course-file.upload');

@@ -95,24 +95,19 @@ class SetSummaryIndex extends Component
         return ['level' => $this->level_id, 'sem' => $this->semester_id];
     }
 
-    public function viewSelectionResults()
-    {
-        $this->SelectionResults();
-
-        return redirect()->route('results.page', ['students' => $this->checked, 'level_id' => $this->determineClass($this->level)['level'], 'semester_id' => $this->determineClass($this->level)['sem'], 'session_id' => $this->set, 'dept_id' => $this->dept_id]);
-    }
-
-    public function releaseResults()
-    {
-        $this->released();
-    }
-
     // Set summary view selection results
     public function viewSelectionResultsSummary()
     {
         $this->SelectionResults();
 
         return redirect()->route('results-summary.page', ['students' => $this->checked, 'level_id' => $this->determineClass($this->level)['level'], 'semester_id' => $this->determineClass($this->level)['sem'], 'session_id' => $this->set, 'dept_id' => $this->dept_id]);
+    }
+
+    public function viewSelectionKingGraduatesSummary()
+    {
+        $this->SelectionResults();
+
+        return redirect()->route('results-king-graduates.page', ['students' => $this->checked, 'level_id' => $this->determineClass($this->level)['level'], 'semester_id' => $this->determineClass($this->level)['sem'], 'session_id' => $this->set, 'dept_id' => $this->dept_id]);
     }
 
     public function render()

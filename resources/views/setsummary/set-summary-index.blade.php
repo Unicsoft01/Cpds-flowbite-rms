@@ -26,7 +26,7 @@
             <div class="flex items-center ml-auto space-x-2 sm:space-x-3">
 
                 <x-success-button class="bg-green-500 hover:bg-green-700 dark:hover:bg-green-800 dark:bg-green-600"
-                    wire:click="releaseResults">
+                    wire:click="viewSelectionKingGraduatesSummary">
                    View King Graduants ({{ count($this->checked) }})
                 </x-success-button>
 

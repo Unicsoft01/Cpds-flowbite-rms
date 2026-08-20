@@ -25,9 +25,8 @@ use Livewire\Attributes\On;
 // use Illuminate\Support\Facades\DB;
 
 #[Lazy()]
-class SetSummaryTable extends Component
+class KinggraduateSummaryTable extends Component
 {
-
     use ResultMethods;
 
     public $Cregs, $sessionId, $students, $session, $semester, $level, $dept, $coreCourse, $eleCount, $officials, $level_id, $semester_id;
@@ -473,7 +472,7 @@ class SetSummaryTable extends Component
 
     public function render()
     {
-        return view('setsummary.set-summary-table', [
+        return view('setsummary.kinggraduate-summary-table', [
             'studentsChunked' => $this->studentsChunked
         ]);
     }
