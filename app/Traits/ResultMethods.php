@@ -145,7 +145,7 @@ trait ResultMethods
 
                 // Scenario 4: Diploma2, Semester2 -> Fetch Diploma1 (Sem1 & Sem2) and Diploma2 (Sem1)
                 elseif ($this->level === "diploma2" && $this->semester === "second") {
-                    $q->where('course_registerations.level_id', '<=', 2)
+                    $query->where('course_registerations.level_id', '<=', 2)
                         ->whereIn('course_registerations.semester_id', [1, 2]);
                 }
             })

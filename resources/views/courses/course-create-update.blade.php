@@ -4,17 +4,7 @@
 
             {{-- {{ $grades }} --}}
             <h1 class="text-md font-semibold text-gray-900 sm:text-2xl dark:text-white capitalize" style="">
-
-                @if ($courseForm->level_id && $courseForm->dept_id && $courseForm->semester_id)
-                    @php
-                        $level = \App\Models\Level::find($courseForm->level_id)->level;
-                        $dept = \App\Models\Dept::find($courseForm->dept_id)->department;
-                        $see = \App\Models\Semester::find($courseForm->semester_id)->sem;
-                    @endphp
-                    {{ $level }} {{ $see }} Sem. Course for {{ $dept }} Dept
-                @else
-                    New Course Registeration
-                @endif
+                New Course Registeration
             </h1>
         </div>
 

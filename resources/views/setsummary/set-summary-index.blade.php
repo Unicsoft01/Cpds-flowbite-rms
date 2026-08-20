@@ -25,18 +25,10 @@
 
             <div class="flex items-center ml-auto space-x-2 sm:space-x-3">
 
-                @if (auth()->user()->hasRole('User') || auth()->user()->hasRole('Super_admin'))
-                    <x-success-button class="bg-green-500 hover:bg-green-700 dark:hover:bg-green-800 dark:bg-green-600"
-                        wire:click="releaseResults">
-                        Release selection results ({{ count($this->checked) }})
-                    </x-success-button>
-                @endif
-
-
-                <x-primary-button class="inline-flex items-center justify-center w-1/2 px-3 py-2 "
-                    wire:click='viewSelectionResults'>
-                    View selection results ({{ count($this->checked) }})
-                </x-primary-button>
+                <x-success-button class="bg-green-500 hover:bg-green-700 dark:hover:bg-green-800 dark:bg-green-600"
+                    wire:click="releaseResults">
+                   View King Graduants ({{ count($this->checked) }})
+                </x-success-button>
 
                 <x-primary-button class="inline-flex items-center justify-center w-1/2 px-3 py-2 "
                     wire:click='viewSelectionResultsSummary'>
@@ -138,21 +130,7 @@
                                         </td>
 
                                         <td class="p-4 space-x-2 whitespace-nowrap">
-                                            <x-primary-button
-                                                class="inline-flex items-center justify-center w-1/2 px-3 py-2 "
-                                                wire:click="$dispatch('edit-course', {id: {{ $student->student_id }}})"
-                                                title="Edit {{ $student->name }}">
-                                                <x-icons.edit-icon />
-                                                Generate Transcript
-                                            </x-primary-button>
 
-                                            <x-success-button
-                                                class="bg-green-500 hover:bg-green-700 dark:hover:bg-green-800 dark:bg-green-600"
-                                                wire:click="$dispatch('delete-prompt', {id: {{ $student->student_id }}})"
-                                                title="delete {{ $student->student }}">
-                                                <x-icons.edit-icon />
-                                                Statement of Result
-                                            </x-success-button>
 
                                         </td>
 
