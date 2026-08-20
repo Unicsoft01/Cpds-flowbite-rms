@@ -123,7 +123,7 @@
                 Examination Results
                 <div class="toggle_container">
                     <div class="tracking-normal leading-normal font-bold text-3xl underline mt-5 mb-2">
-                        SUMMARY RESULT FOR ALL {{ $session }}/{{ $session + 1 }} ACADEMIC SET
+                        SUMMARY OF RESULT FOR ALL {{ $session }}/{{ $session + 1 }} ACADEMIC SET
                     </div>
                 </div>
             </x-result.head-section>
@@ -161,7 +161,7 @@
                             $cumulative = $this->getCumulativeMetrics($student->student_id);
                         @endphp
                         <tr class="h-20">
-                            <td>{{ $student->regno }}</td>
+                            <td class="uppercase">{{ $student->regno }}</td>
                             <td>{{ strtoupper($student->surname . ' ' . $student->middlename . ' ' . $student->firstname) }}
                             </td>
 
@@ -185,15 +185,22 @@
                                     First Class
                                 @elseif ($cumulative['cgpa'] >= 3.5)
                                     Second Class Upper
-                                @elseif ($cumulative['cgpa'] >= 2.49)
+                                @elseif ($cumulative['cgpa'] >= 2.4)
                                     Second Class Lower
-                                @elseif ($cumulative['cgpa'] >= 2.0)
+                                @elseif ($cumulative['cgpa'] >= 1.5)
                                     Third Class
                                 @else
                                     Pass
                                 @endif
                             </td>
-                            <td>{{ $cumulative['cgpa'] >= 1.0 ? 'Passed' : 'Failed' }}</td>
+                            @php
+                                $remark = $this->generateRemark($student);
+                            @endphp
+
+                            <th style="overflow: hidden;word-wrap: break-word;width:10%">
+                                <span class="text-[11px] uppercase print:font-bold">{{ $remark }}
+                                </span>
+                            </th>
                         </tr>
                     @endforeach
                 </tbody>
@@ -207,29 +214,29 @@
     <div class="page-break">
 
         <x-result.head-section :$dept :$session :$level :$semester>
-            SUMMARY OF GRADUATING STUDENT RESULTS
+            SET SUMMARY LEGEND
         </x-result.head-section>
 
-        {{-- <table style="table-layout:fixed;" width="80%" align="right">
+        <table style="table-layout:fixed;" width="80%" align="right">
             <div class="border-2 border-black">
 
                 <thead>
                     <tr>
-                        <th class="" width="20%">
+                        <th class="" width="60%">
                             <h2 class="text-3xl text-left pl-6 p-4 font-extrabold tracking-wide">
-                                SUMMARY
+                                SET SUMMARY
                             </h2>
                         </th>
-                        <th class="" width="10%">
+                        <th class="" width="20%">
 
                         </th>
-                        <th class="" width="10%">
+                        <th class="" width="20%">
 
                         </th>
-                        <th class="" width="60%">
+                        <th class="" width="20%">
 
                             <h2 class="text-3xl text-left pl-4 font-extrabold tracking-wide">
-                                LEGEND
+                                &nbsp;
                             </h2>
                         </th>
                     </tr>
@@ -240,27 +247,31 @@
                         <th class="p-4" style="font-size: 12px;">
 
                             <h3 class="mb-4  text-2xl font-extrabold tracking-wide text-left pl-4">
-                                Total students:
+                                TOTAL NUMBER OF STUDENTS:
                             </h3>
 
                             <h3 class="mb-4  text-2xl font-extrabold tracking-wide text-left pl-4">
-                                Number Registered:
+                                NUMBER OF STUDENTS WITH FIRST CLASS:
                             </h3>
 
                             <h3 class="mb-4  text-2xl font-extrabold tracking-wide text-left pl-4">
-                                Number Examined:
+                                NUMBER OF STUDENTS WITH SECOND CLASS UPPER:
                             </h3>
 
                             <div class="mb-4  text-2xl font-extrabold tracking-wide text-left pl-4">
-                                Number with Passes:
+                                NUMBER OF STUDENTS WITH SECOND CLASS LOWER:
                             </div>
 
                             <div class="mb-4  text-2xl font-extrabold tracking-wide text-left pl-4">
-                                Number with CarryOver:
+                                NUMBER OF STUDENTS WITH THIRD CLASS:
                             </div>
 
                             <div class="mb-4  text-2xl font-extrabold tracking-wide text-left pl-4">
-                                Number Absent:
+                                NUMBER OF STUDENTS WITH PASS:
+                            </div>
+
+                            <div class="mb-4  text-2xl font-extrabold tracking-wide text-left pl-4">
+                                NUMBER OF STUDENTS GRADUATING:
                             </div>
                         </th>
                         <th class="p-4">
@@ -289,113 +300,15 @@
                                 {{ $this->studentsWithoutRegistrations() }}
                             </div>
                         </th>
-                        <th>
 
-                        </th>
-                        <th>
-                            <div class="text-left m-0 p-0 text-2xl font-extrabold uppercase tracking-wide">
-                                @foreach ($coreCourse as $coreCourse)
-                                    {{ $coreCourse->course_code }}&nbsp;&nbsp;&nbsp;{{ $coreCourse->course_title }}
-                                    <br>
-                                @endforeach
-                                <br>
-                                @foreach ($eleCount as $elective)
-                                    {{ $elective->course_code }}&nbsp;&nbsp;&nbsp;{{ $elective->course_title }}
-                                    <br>
-                                @endforeach
-                            </div>
-                        </th>
-                    </tr>
-
-                </tbody>
-            </div>
-        </table> --}}
-
-
-        <table style="table-layout:fixed;" width="80%" align="right">
-            <div class="border-2 border-black">
-
-                <thead>
-                    <tr>
-                        <th class="" width="40%">
-                            <h2 class="text-3xl text-left pl-6 p-4 font-extrabold tracking-wide">
-                                SET SUMMARY
-                            </h2>
-                        </th>
-
-                    </tr>
-                </thead>
-
-                <tbody>
-                    <tr>
-                        <th class="p-4" style="font-size: 12px;">
-
-                            <h3 class="mb-4  text-2xl font-extrabold tracking-wide text-left pl-4">
-                                Total NUMBER OF STUDENTS
-                            </h3>
-
-                            <h3 class="mb-4  text-2xl font-extrabold tracking-wide text-left pl-4">
-                                NUMBER OF FIRST CLASS
-                            </h3>
-
-                            <h3 class="mb-4  text-2xl font-extrabold tracking-wide text-left pl-4">
-                                NUMBER OF Second CLASS UPPER
-                            </h3>
-
-                            <div class="mb-4  text-2xl font-extrabold tracking-wide text-left pl-4">
-                                NUMBER OF Second CLASS LOWER
-                            </div>
-
-                            <div class="mb-4  text-2xl font-extrabold tracking-wide text-left pl-4">
-                                NUMBER OF Third CLASS
-                            </div>
-
-                            <div class="mb-4  text-2xl font-extrabold tracking-wide text-left pl-4">
-                                NUMBER OF Pass
-                            </div>
-
-                            <div class="mb-4  text-2xl font-extrabold tracking-wide text-left pl-4">
-                                Graduating
-                            </div>
-                        </th>
-                        <th class="p-2">
-
-                            <h3 class="mb-4  text-2xl font-extrabold tracking-wide text-left">
-                                25
-                            </h3>
-
-                            <h3 class="mb-4  text-2xl font-extrabold tracking-wide text-left">
-                                1
-                            </h3>
-
-                            <h3 class="mb-4  text-2xl font-extrabold tracking-wide text-left">
-                                19
-                            </h3>
-
-                            <h3 class="mb-4  text-2xl font-extrabold tracking-wide text-left">
-                                6
-                            </h3>
-
-                            <div class="mb-4  text-2xl font-extrabold tracking-wide text-left">
-                                1
-                            </div>
-
-                            <div class="mb-4  text-2xl font-extrabold tracking-wide text-left">
-                                0
-                            </div>
-
-                            <div class="mb-4  text-2xl font-extrabold tracking-wide text-left">
-                                25
-                            </div>
-                        </th>
-                        <th>
-
-                        </th>
                     </tr>
 
                 </tbody>
             </div>
         </table>
+
+
+
 
         <p class="text-sm font-bold">CPDS-Online made with &hearts; from UNICSOFT.</span>
         </p>

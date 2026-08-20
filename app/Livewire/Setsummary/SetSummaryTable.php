@@ -440,11 +440,57 @@ class SetSummaryTable extends Component
         return compact('ctcr', 'ctce', 'ctgp', 'cgpa');
     }
 
+
+    protected function getCarryoverCoursesHere($student)
+    {
+        return DB::table('course_registerations')
+            ->join('courses', 'course_registerations.course_id', '=', 'courses.course_id')
+            ->where('course_registerations.student_id', $student->student_id)
+            ->where('courses.status', 'C') // Only core courses
+            ->where(function ($q) {
+                // Carryover conditions: grade_point < 1, grade == 'F', or no score
+                $q->where('course_registerations.grade_point', '<', 1)
+                    ->orWhere('course_registerations.grade', '=', 'F')
+                    ->orWhereNull('course_registerations.score');
+            })
+            ->where(function ($query) {
+                // Scenario 1: Diploma1, Semester1 -> No previous records
+                if ($this->level === "diploma1" && $this->semester === "first") {
+                    $query->where('course_registerations.level_id', '=', 1)
+                        ->where('course_registerations.semester_id', '=', 1);
+                }
+
+                // Scenario 2: Diploma1, Semester2 -> Fetch Diploma1, Semester1
+                elseif ($this->level === "diploma1" && $this->semester === "second") {
+                    $query->where('course_registerations.level_id', '=', 1)
+                        ->whereIn('course_registerations.semester_id', [1, 2]);
+                }
+
+                // Scenario 3: Diploma2, Semester1 -> Fetch Diploma1 (Semester1 & Semester2)
+                elseif ($this->level === "diploma2" && $this->semester === "first") {
+                    $query->where(function ($q2) {
+                        $q2->where('course_registerations.level_id', '=', 1)
+                            ->whereIn('course_registerations.semester_id', [1, 2]);
+                    })->orWhere(function ($q2) {
+                        $q2->where('course_registerations.level_id', '=', 2)
+                            ->where('course_registerations.semester_id', '=', 1);
+                    });
+                }
+
+                // Scenario 4: Diploma2, Semester2 -> Fetch Diploma1 (Sem1 & Sem2) and Diploma2 (Sem1)
+                elseif ($this->level === "diploma2" && $this->semester === "second") {
+                    $query->where('course_registerations.level_id', '<=', 2)
+                        ->whereIn('course_registerations.semester_id', [1, 2]);
+                }
+            })
+            ->pluck('courses.course_id'); // Fetch only course IDs
+    }
+
     public function generateRemark($student)
     {
         $coreCourseIds = $this->getCoreCourses();
 
-        $carryOverCourseIds = $this->getCarryoverCourses($student);
+        $carryOverCourseIds = $this->getCarryoverCoursesHere($student);
 
         $registeredCourseIds = $this->getRegisteredCourses($student);
 
