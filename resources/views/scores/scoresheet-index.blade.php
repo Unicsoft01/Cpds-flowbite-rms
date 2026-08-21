@@ -249,7 +249,7 @@
 
 
 
-    <div
+    {{-- <div
         class="fixed z-50 w-full max-w-3xl px-4 h-16 left-1/2 bottom-4 -translate-x-1/2 bg-white dark:bg-gray-700 border border-blue-400 dark:border-blue-600 rounded-full shadow-lg flex items-center justify-between gap-4">
 
         <!-- Left Text -->
@@ -267,7 +267,7 @@
         <div class="text-sm text-gray-700 dark:text-gray-200 font-medium whitespace-nowrap">
             Save changes to avoid loss
         </div>
-    </div>
+    </div> --}}
 
 
     @include('components.alerts')
