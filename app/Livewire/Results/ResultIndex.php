@@ -14,6 +14,7 @@ use Livewire\WithPagination;
 use Livewire\Attributes\Lazy;
 use Illuminate\Support\Facades\Log;
 use DB;
+use Livewire\Attributes\On;
 
 
 #[Lazy()]
@@ -105,10 +106,11 @@ class ResultIndex extends Component
     public function viewSelectionResults()
     {
         $this->SelectionResults();
-        
+
         return redirect()->route('results.page', ['students' => $this->checked, 'level_id' => $this->determineClass($this->level)['level'], 'semester_id' => $this->determineClass($this->level)['sem'], 'session_id' => $this->set, 'dept_id' => $this->dept_id]);
     }
 
+    #[On('Confirm-Release-Results')]
     public function releaseResults()
     {
         $this->released();

@@ -60,7 +60,8 @@
 
                 @if (auth()->user()->hasRole('User') || auth()->user()->hasRole('Super_admin'))
                     <x-success-button class="bg-green-500 hover:bg-green-700 dark:hover:bg-green-800 dark:bg-green-600"
-                        wire:click="releaseResults">
+                        wire:click="$dispatch('release-results-prompt', { count: {{ count($this->checked) }} })">
+
                         Release selection results ({{ count($this->checked) }})
                     </x-success-button>
                 @endif
@@ -216,16 +217,4 @@
 
     @include('components.alerts')
 
-    {{-- <script>
-        document.addEventListener('livewire:init', () => {
-            $wire.on('log', (event) => {
-            try{
-              console[event[0].level](event[0].obj);
-            }
-            catch{
-              console.log(event[0]);
-            }
-          });
-        });
-      </script> --}}
 </div>

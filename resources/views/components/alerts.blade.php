@@ -75,7 +75,7 @@
             })
         });
 
-        
+
         // Delete multiple comfirm only
         $wire.on('delete-multiple-prompt', (event) => {
             const data = event
@@ -102,6 +102,78 @@
                     $wire.dispatch('Confirm-Multiple-Delete')
                 }
             })
+        });
+
+        // Release selected results confirmation
+        $wire.on('release-results-prompt', (event) => {
+
+            const count = event.count ?? 0;
+
+            // No students selected
+            if (count < 1) {
+                Swal.fire({
+                    title: 'No Students Selected',
+                    text: 'Please select one or more students before releasing results.',
+                    icon: 'warning',
+
+                    customClass: {
+                        confirmButton: "px-5 py-2 text-base font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 transition ease-in-out duration-150",
+                    },
+
+                    buttonsStyling: false
+                });
+
+                return;
+            }
+
+            Swal.fire({
+                title: 'Release Selected Results?',
+
+                html: `
+            <div class="text-left">
+                <p class="mb-3">
+                    You are about to release results for
+                    <strong>${count} selected student${count > 1 ? 's' : ''}</strong>.
+                </p>
+
+                <p class="mb-3">
+                    Once released, the selected students will be able to view
+                    their results from their student portal.
+                </p>
+
+                <p class="font-semibold text-red-600">
+                    Please ensure that all scores, grades and result details
+                    are correct before proceeding.
+                </p>
+            </div>
+        `,
+
+                icon: 'warning',
+
+                showCancelButton: true,
+
+                confirmButtonText: 'Yes, Release Results',
+                cancelButtonText: 'Cancel',
+
+                reverseButtons: true,
+
+                customClass: {
+                    confirmButton: "px-5 py-2 text-base font-medium text-center text-white bg-green-700 rounded-lg hover:bg-green-800 dark:bg-green-600 dark:hover:bg-green-700 transition ease-in-out duration-150",
+
+                    cancelButton: "px-5 py-2 text-base font-medium text-center text-white bg-gray-600 rounded-lg hover:bg-gray-700 dark:bg-gray-600 dark:hover:bg-gray-700 transition ease-in-out duration-150 mr-2",
+                },
+
+                buttonsStyling: false,
+
+            }).then((result) => {
+
+                if (result.isConfirmed) {
+
+                    $wire.dispatch('Confirm-Release-Results');
+
+                }
+
+            });
         });
     </script>
 @endscript
