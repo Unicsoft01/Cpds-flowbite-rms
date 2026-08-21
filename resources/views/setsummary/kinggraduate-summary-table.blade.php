@@ -123,7 +123,8 @@
                 Examination Results
                 <div class="toggle_container">
                     <div class="tracking-normal leading-normal font-bold text-3xl underline mt-5 mb-2">
-                        SUMMARY OF GRADUATING STUDENT RESULTS FOR {{ $session }}/{{ $session + 1 }} ACADEMIC SESSION
+                        SUMMARY OF GRADUATING STUDENT RESULTS FOR {{ $session }}/{{ $session + 1 }} ACADEMIC
+                        SESSION
                     </div>
                 </div>
             </x-result.head-section>
@@ -192,7 +193,7 @@
                                     Pass
                                 @endif
                             </td>
-             
+
                         </tr>
                     @endforeach
                 </tbody>
@@ -266,31 +267,40 @@
                                 NUMBER OF STUDENTS GRADUATING:
                             </div>
                         </th>
+
+                        @php
+                            $summary = $this->getSummaryLegend();
+                        @endphp
+
                         <th class="p-4">
 
-                            <h3 class="mb-4  text-2xl font-extrabold tracking-wide text-left">
-                                {{ $this->studentsWithCourses() + $this->studentsWithoutRegistrations() }}
+                            <h3 class="mb-4 text-2xl font-extrabold tracking-wide text-left">
+                                {{ $summary['total'] }}
                             </h3>
 
-                            <h3 class="mb-4  text-2xl font-extrabold tracking-wide text-left">
-                                {{ $this->studentsWithCourses() }}
+                            <h3 class="mb-4 text-2xl font-extrabold tracking-wide text-left">
+                                {{ $summary['first_class'] }}
                             </h3>
 
-                            <h3 class="mb-4  text-2xl font-extrabold tracking-wide text-left">
-                                {{ $this->studentsWithScores() }}
+                            <h3 class="mb-4 text-2xl font-extrabold tracking-wide text-left">
+                                {{ $summary['second_class_upper'] }}
                             </h3>
 
-                            <div class="mb-4  text-2xl font-extrabold tracking-wide text-left">
-                                {{ $this->studentsWhoPassed() }}
-                            </div>
+                            <h3 class="mb-4 text-2xl font-extrabold tracking-wide text-left">
+                                {{ $summary['second_class_lower'] }}
+                            </h3>
 
-                            <div class="mb-4  text-2xl font-extrabold tracking-wide text-left">
-                                {{ $this->studentsWithCarryOver() }}
-                            </div>
+                            <h3 class="mb-4 text-2xl font-extrabold tracking-wide text-left">
+                                {{ $summary['third_class'] }}
+                            </h3>
 
-                            <div class="mb-4  text-2xl font-extrabold tracking-wide text-left">
-                                {{ $this->studentsWithoutRegistrations() }}
-                            </div>
+                            <h3 class="mb-4 text-2xl font-extrabold tracking-wide text-left">
+                                {{ $summary['pass'] }}
+                            </h3>
+
+                            <h3 class="mb-4 text-2xl font-extrabold tracking-wide text-left">
+                                {{ $summary['graduating'] }}
+                            </h3>
                         </th>
 
                     </tr>

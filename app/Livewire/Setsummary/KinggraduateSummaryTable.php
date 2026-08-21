@@ -35,6 +35,10 @@ class KinggraduateSummaryTable extends Component
     public $recordsPerPage = 10;
     public $studentsChunked = [];
 
+    public $totalSelectedStudents = 0;
+    public $studentsWithCarryOverCount = 0;
+    public $studentsWithoutCarryOverCount = 0;
+
 
     public function mount($student_id, $session_id, $semester_id, $level_id, $dept_id)
     {
@@ -57,15 +61,37 @@ class KinggraduateSummaryTable extends Component
             ->findOrFail($dept_id); // Ensures valid dept_id
 
         $students = Students::with([
-            'courseRegistrations' => function ($query) use ($semester_id, $level_id, $session_id) {
-                $query->where('semester_id', $semester_id)
-                    ->where('level_id', $level_id)
-                    ->where('session_id', $session_id)
-                    ->with('courses'); // Load course details
-            },
-        ])->whereIn('student_id', (array) $student_id)->get();
+            'courseRegistrations.courses',
+        ])
+            ->whereIn('student_id', (array) $student_id)
+            ->orderBy('regno')
+            ->get();
 
-        $this->studentsChunked = $students->toBase()->chunk($this->recordsPerPage);
+        $this->totalSelectedStudents = $students->count();
+
+        $studentsWithCarryOver = $students->filter(function ($student) {
+            return $student->courseRegistrations->contains(function ($registration) {
+                return (int) $registration->is_carryover === 1
+                    && strtoupper(trim((string) $registration->grade)) === 'F' || is_null($registration->score) || $registration->is_spillover === 1; // Check for spillover as well
+            });
+        });
+
+        $this->studentsWithCarryOverCount = $studentsWithCarryOver->count();
+
+        $studentsWithoutCarryOver = $students->reject(function ($student) {
+            return $student->courseRegistrations->contains(function ($registration) {
+                return (int) $registration->is_carryover === 1
+                    && strtoupper(trim((string) $registration->grade)) === 'F' || is_null($registration->score) || $registration->is_spillover === 1; // Check for spillover as well
+            });
+        });
+
+        $this->studentsWithoutCarryOverCount = $studentsWithoutCarryOver->count();
+
+        $this->students = $studentsWithoutCarryOver;
+
+        $this->studentsChunked = $this->students
+            ->toBase()
+            ->chunk($this->recordsPerPage);
 
         // Fetch signatory details for the current user
         $this->officials = Signatory::select('user_id', 'exam_officer', 'hod')
@@ -197,40 +223,39 @@ class KinggraduateSummaryTable extends Component
 
     public function studentsWithCourses()
     {
-        return $this->Cregs->groupBy('student_id')->count();
+        return $this->students->filter(function ($student) {
+            return $student->courseRegistrations->isNotEmpty();
+        })->count();
     }
 
     public function studentsWithScores()
     {
-        return $this->Cregs
-            ->whereNotNull('score') // Filters only registrations with a score
-            ->groupBy('student_id') // Ensures each student is counted once
-            ->count(); // Counts unique students
+        return $this->students->filter(function ($student) {
+            return $student->courseRegistrations
+                ->contains(fn($registration) => !is_null($registration->score));
+        })->count();
     }
 
     public function studentsWhoPassed()
     {
-        return $this->Cregs
-            ->groupBy('student_id') // Ensure each student is evaluated as a group
-            ->filter(
-                fn($registrations) =>
-                $registrations->every(fn($reg) => ($reg->grade_point ?? 0) >= 1) // All courses must have a grade_point >= 1
-            )
-            ->count(); // Count only students who passed all courses
+        return $this->students->filter(function ($student) {
+            return $student->courseRegistrations->isNotEmpty()
+                && $student->courseRegistrations->every(function ($registration) {
+                    return (int) $registration->is_carryover !== 1
+                        && strtoupper(trim((string) $registration->grade)) !== 'F';
+                });
+        })->count();
     }
 
     // Students with Carry Over (At least one course failed)
     public function studentsWithCarryOver()
     {
-        return $this->Cregs
-            ->groupBy('student_id') // Group registrations by each student
-            ->filter(
-                fn($registrations) =>
-                $registrations->contains(
-                    fn($reg) => ($reg->grade_point ?? 0) < 1 || $reg->grade === 'F' || is_null($reg->score) // Carryover condition
-                )
-            )
-            ->count(); // Count only students with at least one carryover
+        return $this->studentsWithCarryOverCount;
+    }
+
+    public function studentsWithoutCarryOver()
+    {
+        return $this->studentsWithoutCarryOverCount;
     }
 
 
@@ -468,6 +493,67 @@ class KinggraduateSummaryTable extends Component
         }
 
         return 'Passed';
+    }
+
+    public function getClassOfDegree($cgpa)
+    {
+        $cgpa = (float) $cgpa;
+
+        if ($cgpa >= 4.50) {
+            return 'First Class';
+        }
+
+        if ($cgpa >= 3.50) {
+            return 'Second Class Upper';
+        }
+
+        if ($cgpa >= 2.49) {
+            return 'Second Class Lower';
+        }
+
+        if ($cgpa >= 2.00) {
+            return 'Third Class';
+        }
+
+        return 'Pass';
+    }
+
+    public function getSummaryLegend()
+    {
+        $summary = [
+            'total' => $this->students->count(),
+            'first_class' => 0,
+            'second_class_upper' => 0,
+            'second_class_lower' => 0,
+            'third_class' => 0,
+            'pass' => 0,
+            'graduating' => 0,
+        ];
+
+        foreach ($this->students as $student) {
+
+            $cumulative = $this->calculateSummaryMetrics($student, $this->session, $this->semester, $this->level);
+
+            $cgpa = (float) $cumulative['cgpa'];
+
+            if ($cgpa >= 4.50) {
+                $summary['first_class']++;
+            } elseif ($cgpa >= 3.50) {
+                $summary['second_class_upper']++;
+            } elseif ($cgpa >= 2.40) {
+                $summary['second_class_lower']++;
+            } elseif ($cgpa >= 1.50) {
+                $summary['third_class']++;
+            } else {
+                $summary['pass']++;
+            }
+
+            if ($cgpa >= 1.00) {
+                $summary['graduating']++;
+            }
+        }
+
+        return $summary;
     }
 
     public function render()
