@@ -39,6 +39,9 @@ class KinggraduateSummaryTable extends Component
     public $studentsWithCarryOverCount = 0;
     public $studentsWithoutCarryOverCount = 0;
 
+    public $eligibleStudentsCount = 0;
+    public $ineligibleStudentsCount = 0;
+
 
     public function mount($student_id, $session_id, $semester_id, $level_id, $dept_id)
     {
@@ -69,25 +72,14 @@ class KinggraduateSummaryTable extends Component
 
         $this->totalSelectedStudents = $students->count();
 
-        $studentsWithCarryOver = $students->filter(function ($student) {
-            return $student->courseRegistrations->contains(function ($registration) {
-                return (int) $registration->is_carryover === 1
-                    && strtoupper(trim((string) $registration->grade)) === 'F' || is_null($registration->score) || $registration->is_spillover === 1; // Check for spillover as well
-            });
-        });
+        [$eligibleStudents, $ineligibleStudents] = $students->partition(
+            fn($student) => ! $this->hasOutstandingResultIssue($student)
+        );
 
-        $this->studentsWithCarryOverCount = $studentsWithCarryOver->count();
+        $this->eligibleStudentsCount = $eligibleStudents->count();
+        $this->ineligibleStudentsCount = $ineligibleStudents->count();
 
-        $studentsWithoutCarryOver = $students->reject(function ($student) {
-            return $student->courseRegistrations->contains(function ($registration) {
-                return (int) $registration->is_carryover === 1
-                    && strtoupper(trim((string) $registration->grade)) === 'F' || is_null($registration->score) || $registration->is_spillover === 1; // Check for spillover as well
-            });
-        });
-
-        $this->studentsWithoutCarryOverCount = $studentsWithoutCarryOver->count();
-
-        $this->students = $studentsWithoutCarryOver;
+        $this->students = $eligibleStudents->values();
 
         $this->studentsChunked = $this->students
             ->toBase()
@@ -121,6 +113,22 @@ class KinggraduateSummaryTable extends Component
             ->where('level_id', $this->level_id)
             ->groupBy('registration_id', 'semester_id', 'dept_id', 'level_id', 'student_id', 'course_id', 'session_id', 'registered_by', 'is_carryover', 'is_spillover', 'result_status', 'created_at', 'user_id', 'score', 'grade', 'grade_point', 'updated_at')
             ->get();
+    }
+
+    protected function hasOutstandingResultIssue($student): bool
+    {
+        $registrations = $student->courseRegistrations;
+
+        // No academic records = not eligible for graduating summary
+        if ($registrations->isEmpty()) {
+            return true;
+        }
+
+        return $registrations->contains(function ($registration) {
+            return is_null($registration->score)
+                || strtoupper(trim((string) $registration->grade)) === 'F'
+                || (int) $registration->is_spillover === 1;
+        });
     }
 
     // summary methods
