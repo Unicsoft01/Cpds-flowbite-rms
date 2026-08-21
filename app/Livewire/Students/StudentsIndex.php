@@ -36,12 +36,37 @@ class StudentsIndex extends Component
     public $paginate = 100;
 
     #[Url]
-    #[Computed()]
     public $dept_id = null;
 
     #[Url]
-    #[Computed()]
     public $set = null;
+
+    public $appliedDeptId = null;
+    public $appliedSet = null;
+
+    public bool $filtersApplied = false;
+
+    public function applyFilter()
+    {
+        $this->validate([
+            'dept_id' => ['required', 'exists:depts,dept_id'],
+            'set' => ['required', 'exists:academic_sessions,session_id'],
+        ], [
+            'dept_id.required' => 'Please select a department.',
+            'set.required' => 'Please select an academic set.',
+        ]);
+
+        $this->appliedDeptId = $this->dept_id;
+        $this->appliedSet = $this->set;
+
+        $this->filtersApplied = true;
+
+        $this->resetPage();
+        $this->checked = [];
+        $this->selectAll = false;
+
+        unset($this->students);
+    }
 
     public function setSortBy($col)
     {
@@ -55,48 +80,57 @@ class StudentsIndex extends Component
 
     public function updatedSelectAll($value)
     {
+        if (! $this->filtersApplied || ! $this->students) {
+            $this->checked = [];
+            return;
+        }
+
         if ($value) {
-            $this->checked = $this->students->pluck('student_id')->toArray(); // Select all results
+            $this->checked = $this->students
+                ->pluck('student_id')
+                ->toArray();
         } else {
-            $this->checked = []; // Deselect all results
+            $this->checked = [];
         }
     }
 
     public function render()
     {
         return view('students.students-index', [
-            'students' => $this->students,
+            'students' => $this->filtersApplied
+                ? $this->students
+                : null,
         ]);
     }
 
-    #[Computed()]
+    #[Computed]
     public function students()
     {
-        if (Auth::user()->hasRole('Admin') || Auth::user()->hasRole('Super_admin')) {
-            $deptIds = Dept::pluck('dept_id'); // Fetch all departments for admins
-        } else {
-            $deptIds = Dept::where('user_id', Auth::id())->pluck('dept_id');
-        }
-        $sets = AcademicSessions::pluck('session_id');
-
-        // Start building the query
-        $query = Students::query()->with(['department', 'Academicset:session_id,session']);
-
-        // Apply the department filter
-        if ($this->dept_id) {
-            $query->where('dept_id', $this->dept_id);
-        } else {
-            $query->whereIn('dept_id', $deptIds);
+        if (! $this->filtersApplied) {
+            return null;
         }
 
-        if ($this->set) {
-            $query->where('set', $this->set);
-        } else {
-            $query->whereIn('set', $sets);
+        $query = Students::query()
+            ->with([
+                'department',
+                'Academicset:session_id,session'
+            ]);
+
+        // Restrict department access
+        if (
+            ! Auth::user()->hasRole('Admin')
+            && ! Auth::user()->hasRole('Super_admin')
+        ) {
+
+            $query->whereHas('department', function ($q) {
+                $q->where('user_id', Auth::id());
+            });
         }
 
-
-        return $query->searchStudent(trim($this->search))
+        return $query
+            ->where('dept_id', $this->appliedDeptId)
+            ->where('set', $this->appliedSet)
+            ->searchStudent(trim($this->search))
             ->orderBy($this->orderBy, $this->sortDir)
             ->simplePaginate($this->paginate);
     }
