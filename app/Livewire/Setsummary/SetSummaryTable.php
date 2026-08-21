@@ -66,6 +66,8 @@ class SetSummaryTable extends Component
             },
         ])->whereIn('student_id', (array) $student_id)->get();
 
+        $this->students = $students;
+
         $this->studentsChunked = $students->toBase()->chunk($this->recordsPerPage);
 
         // Fetch signatory details for the current user
@@ -192,6 +194,49 @@ class SetSummaryTable extends Component
         ];
     }
 
+
+    public function getSummaryLegend()
+    {
+        $summary = [
+            'total' => $this->students->count(),
+            'first_class' => 0,
+            'second_class_upper' => 0,
+            'second_class_lower' => 0,
+            'third_class' => 0,
+            'pass' => 0,
+            'graduating' => 0,
+        ];
+
+        foreach ($this->students as $student) {
+
+            $cumulative = $this->calculateSummaryMetrics(
+                $student,
+                $this->session,
+                $this->semester,
+                $this->level
+            );
+
+            $cgpa = (float) $cumulative['cgpa'];
+
+            if ($cgpa >= 4.50) {
+                $summary['first_class']++;
+            } elseif ($cgpa >= 3.50) {
+                $summary['second_class_upper']++;
+            } elseif ($cgpa >= 2.40) {
+                $summary['second_class_lower']++;
+            } elseif ($cgpa >= 1.50) {
+                $summary['third_class']++;
+            } else {
+                $summary['pass']++;
+            }
+
+            if ($cgpa >= 1.00) {
+                $summary['graduating']++;
+            }
+        }
+
+        return $summary;
+    }
 
 
     // end summary methtods
