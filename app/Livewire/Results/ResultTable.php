@@ -178,20 +178,35 @@ class ResultTable extends Component
         return $courseRegistrations->sum(fn($reg) => ($reg->grade_point ?? 0)); //* ($reg->courses->unit ?? 0));
     }
 
+    // public function calculateGPA($courseRegistrations)
+    // {
+    //     // Grade Point Average (TGP / TCR)
+    //     $tcr = $this->calculateTCR($courseRegistrations);
+    //     $tgp = $this->calculateTGP($courseRegistrations);
+
+    //     // Calculate GPA (TGP / TCR)
+    //     $gpa = $tcr > 0 ? round($tgp / $tcr, 2) : 0;
+
+    //     // Ensure GPA does not exceed 5.00
+    //     $gpa = min($gpa, 5.00);
+
+    //     // Return formatted GPA if greater than 0, else return 0
+    //     return $gpa > 0 ? number_format($gpa, 2, '.', '') : 0;
+    // }
     public function calculateGPA($courseRegistrations)
     {
-        // Grade Point Average (TGP / TCR)
-        $tcr = $this->calculateTCR($courseRegistrations);
-        $tgp = $this->calculateTGP($courseRegistrations);
+        $tcr = (float) $this->calculateTCR($courseRegistrations);
+        $tgp = (float) $this->calculateTGP($courseRegistrations);
 
-        // Calculate GPA (TGP / TCR)
-        $gpa = $tcr > 0 ? round($tgp / $tcr, 2) : 0;
+        $gpa = $this->applyPerfectFiveRule(
+            $tgp,
+            $tcr,
+            $courseRegistrations
+        );
 
-        // Ensure GPA does not exceed 5.00
-        $gpa = min($gpa, 5.00);
-
-        // Return formatted GPA if greater than 0, else return 0
-        return $gpa > 0 ? number_format($gpa, 2, '.', '') : 0;
+        return $gpa > 0
+            ? number_format($gpa, 2, '.', '')
+            : '0.00';
     }
 
     // summary
@@ -214,21 +229,40 @@ class ResultTable extends Component
         return $student->courseRegistrations->sum(fn($reg) => ($reg->grade_point ?? 0)); // * ($reg->courses->unit ?? 0));
     }
 
+    // public function calculateCGPA($student)
+    // {
+    //     // Cumulative GPA (CTGP / CTCR)
+    //     $ctcr = $this->calculateCTCR($student);
+    //     $ctgp = $this->calculateCTGP($student);
+
+    //     // return $ctcr > 0 ? round($ctgp / $ctcr, 2) : 0;
+
+    //     // Calculate CGPA (CTGP / CTCR)
+    //     $cgpa = $ctcr > 0 ? round($ctgp / $ctcr, 2) : 0;
+
+    //     $cgpa = min($cgpa, 5.00);
+
+    //     return $cgpa > 0 ? number_format($cgpa, 2, '.', '') : 0;
+    // }
     public function calculateCGPA($student)
     {
-        // Cumulative GPA (CTGP / CTCR)
-        $ctcr = $this->calculateCTCR($student);
-        $ctgp = $this->calculateCTGP($student);
+        $registrations = $student->courseRegistrations;
 
-        // return $ctcr > 0 ? round($ctgp / $ctcr, 2) : 0;
+        $ctcr = (float) $this->calculateCTCR($student);
+        $ctgp = (float) $this->calculateCTGP($student);
 
-        // Calculate CGPA (CTGP / CTCR)
-        $cgpa = $ctcr > 0 ? round($ctgp / $ctcr, 2) : 0;
+        $cgpa = $this->applyPerfectFiveRule(
+            $ctgp,
+            $ctcr,
+            $registrations
+        );
 
-        $cgpa = min($cgpa, 5.00);
-
-        return $cgpa > 0 ? number_format($cgpa, 2, '.', '') : 0;
+        return $cgpa > 0
+            ? number_format($cgpa, 2, '.', '')
+            : '0.00';
     }
+
+
     // Metrics
     public function calculatePreviousMetrics($student, $currentSession, $currentSemester, $currentLevel)
     {
@@ -276,6 +310,7 @@ class ResultTable extends Component
         $previousRegistrations = $query->select(
             'courses.unit',
             'course_registerations.grade_point',
+            'course_registerations.grade',
             'course_registerations.score'
         )->get();
 
@@ -286,11 +321,15 @@ class ResultTable extends Component
         $cgpa = $ctcr > 0 ? round($ctgp / $ctcr, 2) : 0; // Cumulative GPA
 
         // Calculate CGPA (CTGP / CTCR)
-        $cgpa = $ctcr > 0 ? round($ctgp / $ctcr, 2) : 0;
+        $cgpa = $this->applyPerfectFiveRule(
+            (float) $ctgp,
+            (float) $ctcr,
+            $previousRegistrations
+        );
 
-        $cgpa = min($cgpa, 5.00);
-
-        $cgpa =  $cgpa > 0 ? number_format($cgpa, 2, '.', '') : 0;
+        $cgpa = $cgpa > 0
+            ? number_format($cgpa, 2, '.', '')
+            : '0.00';
 
         // Return calculated metrics
         return compact('ctcr', 'ctce', 'ctgp', 'cgpa');
@@ -340,6 +379,7 @@ class ResultTable extends Component
             ->select(
                 'courses.unit',
                 'course_registerations.grade_point',
+                'course_registerations.grade',
                 'course_registerations.score'
             )
             ->get();
@@ -348,14 +388,96 @@ class ResultTable extends Component
         $ctcr = $registrations->sum('unit'); // Total Credit Registered
         $ctce = $registrations->filter(fn($reg) => $reg->grade_point > 0)->sum('unit'); // Total Credit Earned
         $ctgp = $registrations->sum(fn($reg) => ($reg->grade_point ?? 0)); // * ($reg->unit ?? 0)); // Total Grade Points
-        $cgpa = $ctcr > 0 ? round($ctgp / $ctcr, 2) : 0; // Cumulative GPA
-
-        $cgpa = min($cgpa, 5.00);
+        $cgpa = $this->applyPerfectFiveRule(
+            (float) $ctgp,
+            (float) $ctcr,
+            $registrations
+        );
 
         $cgpa = $cgpa > 0 ? number_format($cgpa, 2, '.', '') : 0;
 
         // Return the calculated metrics
         return compact('ctcr', 'ctce', 'ctgp', 'cgpa');
+    }
+
+    private function applyPerfectFiveRule(
+        float $tgp,
+        float $tcr,
+        $registrations
+    ): float {
+        if ($tcr <= 0) {
+            return 0;
+        }
+
+        $rawGpa = $tgp / $tcr;
+
+        /*
+    |--------------------------------------------------------------------------
+    | Normal GPA below 5.00
+    |--------------------------------------------------------------------------
+    | If the student does not mathematically reach 5.00, leave the normal
+    | calculation alone.
+    */
+        if ($rawGpa < 5.00) {
+            return round($rawGpa, 2);
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | Check whether every course is an A
+    |--------------------------------------------------------------------------
+    */
+        $allAs = $registrations->every(function ($registration) {
+            return strtoupper(trim((string) $registration->grade)) === 'A';
+        });
+
+        /*
+    |--------------------------------------------------------------------------
+    | Exactly 5.00 is reserved for all-A performance
+    |--------------------------------------------------------------------------
+    */
+        if ($allAs) {
+            return 5.00;
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | Calculate non-A penalty
+    |--------------------------------------------------------------------------
+    |
+    | A = 10 => 10 - 10 = 0
+    | B = 8  => 10 - 8  = 2
+    |
+    | Two Bs therefore contribute a total penalty of 4.
+    |--------------------------------------------------------------------------
+    */
+        $penalty = $registrations
+            ->filter(function ($registration) {
+                return strtoupper(trim((string) $registration->grade)) !== 'A';
+            })
+            ->sum(function ($registration) {
+                $gradePoint = (float) ($registration->grade_point ?? 0);
+
+                return max(0, 10 - $gradePoint);
+            });
+
+        /*
+    |--------------------------------------------------------------------------
+    | Apply penalty to TGP before recalculating GPA
+    |--------------------------------------------------------------------------
+    */
+        $adjustedTgp = max(0, $tgp - $penalty);
+
+        $adjustedGpa = $adjustedTgp / $tcr;
+
+        /*
+    |--------------------------------------------------------------------------
+    | A non-all-A result must never finally display as 5.00
+    |--------------------------------------------------------------------------
+    */
+        $adjustedGpa = min($adjustedGpa, 4.99);
+
+        return round($adjustedGpa, 2);
     }
 
     public function generateRemark($student)
