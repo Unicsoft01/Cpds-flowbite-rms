@@ -185,14 +185,21 @@ class ScoresheetIndex extends Component
     public function saveScore()
     {
         if ($this->editingField) {
-            // Fetch the specific course registration record
-            $courseRegistration = CourseRegisterations::findOrFail($this->editingField);
+            // Fetch the course registration with its related course
+            $courseRegistration = CourseRegisterations::with('courses')
+                ->findOrFail($this->editingField);
+
+            // Course unit comes from the related course
+            $courseUnit = (int) ($courseRegistration->courses->unit ?? 0);
+
+            // Calculate once instead of calling twice
+            $result = $this->calculateGrade($this->editedData['score']);
 
             // Update the record with the new data
             $courseRegistration->update([
-                'score' => $this->editedData['score'],
-                'grade' => $this->calculateGrade($this->editedData['score'])['grade'],
-                'grade_point' => $this->calculateGrade($this->editedData['score'])['point'],
+                'score'       => $this->editedData['score'],
+                'grade'       => $result['grade'],
+                'grade_point' => $result['point'] * $courseUnit,
             ]);
 
             // Flash success message

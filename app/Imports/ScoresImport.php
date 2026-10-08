@@ -46,8 +46,15 @@ class ScoresImport implements ToModel, WithHeadingRow, WithValidation
     public function model(array $row)
     {
         $student = $this->students->where('regno', $row['regno'])->first();
-        // Find the course registration record using the reg number
-        $courseRegistration = CourseRegisterations::where('student_id', $student->student_id)
+
+        if (! $student) {
+            Log::warning("No student found for regno: {$row['regno']}");
+            return null;
+        }
+
+        // Find the course registration record, eager loading the related course
+        $courseRegistration = CourseRegisterations::with('courses')
+            ->where('student_id', $student->student_id)
             ->where('course_id', $this->course_id)
             ->where('level_id', $this->level_id)
             ->where('semester_id', $this->semester_id)
@@ -56,17 +63,19 @@ class ScoresImport implements ToModel, WithHeadingRow, WithValidation
             ->first();
 
         if ($courseRegistration) {
-            // Update the scores
-            $courseRegistration->score = $row['score'];
+            // Course unit comes from the related course
+            $courseUnit = (int) ($courseRegistration->courses->unit ?? 0);
 
-            // Calculate grade and grade point based on score
-            $courseRegistration->grade = $this->calculateGrade($row['score'])['grade'];
-            $courseRegistration->grade_point = $this->calculateGrade($row['score'])['point'];
+            // Calculate once instead of calling twice
+            $result = $this->calculateGrade($row['score']);
 
-            // Save the updated record
+            $courseRegistration->score       = $row['score'];
+            $courseRegistration->grade       = $result['grade'];
+            $courseRegistration->grade_point = $result['point'] * $courseUnit;
+
             $courseRegistration->save();
         } else {
-            Log::warning("No matching record found for student ID: {$row['student_id']} in course ID: {$this->course_id}");
+            Log::warning("No matching record found for regno: {$row['regno']} in course ID: {$this->course_id}");
         }
     }
 
